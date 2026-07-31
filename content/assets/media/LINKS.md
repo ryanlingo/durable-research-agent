@@ -9,6 +9,7 @@
 | 2026-07-31 | Post-crash full page (savings) | P3.3 | `content/assets/media/2026-07-31-showcase-comparison.png` |
 | 2026-07-31 | Post-crash savings panel | P3.3 | `content/assets/media/2026-07-31-showcase-comparison-panel.png` |
 | 2026-07-31 | Temporal Web UI | P3.3 | `content/assets/media/2026-07-31-temporal-web-ui.png` |
+| 2026-07-31 | Crash-lab talk deck (pptx) | deck | `content/decks/2026-07-31-durable-agents-crash-lab.pptx` |
 
 Re-record demo:
 

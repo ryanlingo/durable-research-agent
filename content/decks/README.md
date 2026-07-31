@@ -2,11 +2,13 @@
 
 Slide decks for talks, internal reviews, and interview walkthroughs.
 
-## Ready outlines
+## Ready decks
 
-| Outline | Use |
-|---------|-----|
-| [`2026-07-31-durable-agents-crash-lab-outline.md`](2026-07-31-durable-agents-crash-lab-outline.md) | 12-slide crash lab (10-12 min) + backup slides; asset map to diagrams/media |
+| File | Use |
+|------|-----|
+| [`2026-07-31-durable-agents-crash-lab.pptx`](2026-07-31-durable-agents-crash-lab.pptx) | 12-slide B&W talk deck (built) |
+| [`2026-07-31-durable-agents-crash-lab-outline.md`](2026-07-31-durable-agents-crash-lab-outline.md) | Speaker notes + asset map + backup slides |
+| [`build_crash_lab_deck.js`](build_crash_lab_deck.js) | Regenerator (needs `pptxgenjs`) |
 
 ## Put here
 

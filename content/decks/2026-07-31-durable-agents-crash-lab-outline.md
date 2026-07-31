@@ -1,7 +1,8 @@
 ---
 title: Durable agents crash lab
 status: ready
-format: outline (build slides from this; export as pptx/key later)
+format: outline + pptx
+pptx: content/decks/2026-07-31-durable-agents-crash-lab.pptx
 audience: AI engineers, hiring managers, internal Temporal / platform talks
 duration:
   short: 10-12 min
@@ -321,7 +322,7 @@ All paths under `content/assets/`.
 2. Prefer SVG in Keynote/PowerPoint when possible; PNG exports exist for every diagram.  
 3. Do not read the recovery-gap list in the short talk; one example (mid-write) is enough.  
 4. If the room has no network, Showcase needs none. Live mode and Temporal Web UI need local services.  
-5. After export, drop `YYYY-MM-DD-durable-agents-crash-lab.pptx` (or `.key`/PDF) next to this outline and add a row to `content/assets/media/LINKS.md` if hosted.
+5. Built deck: `2026-07-31-durable-agents-crash-lab.pptx` (regenerate with `node content/decks/build_crash_lab_deck.js` after `npm install pptxgenjs` in a temp dir or local node_modules).  
 
 ## Related
 

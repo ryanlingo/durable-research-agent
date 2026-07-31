@@ -18,7 +18,7 @@ Same agent. Two orchestration layers. One experiment.
 | 5 | Parallel tools only count if both stacks pay the same concurrency tax | `asyncio.gather` vs concurrent Activities; crash mid-search | ready | `drafts/05-parallel-tools-fair-comparison.md` (+ social ready) |
 | 6 | Recording the proof | Loom script + shot list | ready (video in media/; narration optional) | `assets/loom-crash-demo.md` + `assets/media/2026-07-31-showcase-crash-demo.mp4` |
 | — | What we leave incomplete on purpose (appendix) | Intentional recovery gaps on the non-Temporal path | ready | `drafts/recovery-gaps-on-purpose.md` + `concepts/recovery-gaps.md` |
-| — | Crash-lab talk deck | 12-slide outline + asset map | ready (outline; pptx optional) | `decks/2026-07-31-durable-agents-crash-lab-outline.md` |
+| — | Crash-lab talk deck | 12-slide outline + pptx | ready | `decks/2026-07-31-durable-agents-crash-lab.pptx` + outline |
 
 Series line: I built the same multi-agent research system twice (asyncio + checkpoints vs Temporal), then killed both mid-run. The delta is the curriculum.
 
