@@ -2,6 +2,8 @@
 
 Use the same query in both systems and kill the process at the same point.
 
+Longer walkthroughs: [Showcase UI](../content/tutorials/01-showcase-ui.md) · [non-Temporal CLI](../content/tutorials/02-crash-without-temporal.md) · [Temporal Worker](../content/tutorials/03-crash-with-temporal.md).
+
 ## Shared query
 
 ```

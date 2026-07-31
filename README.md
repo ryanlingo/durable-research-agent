@@ -137,6 +137,8 @@ python -m ui.app
 | **Showcase** | Scripted dual crash and token comparison. No API keys or Temporal Service. |
 | **Live** | Real agents. Crash/resume non-Temporal from the UI. Temporal needs a Worker and `temporal server start-dev`. |
 
+Step-by-step: [`content/tutorials/01-showcase-ui.md`](content/tutorials/01-showcase-ui.md). Full tutorial index: [`content/tutorials/`](content/tutorials/).
+
 ### Non-Temporal CLI
 
 ```bash
@@ -189,8 +191,8 @@ Copy [`.env.example`](.env.example) to `.env` (gitignored):
 
 Use the same query; kill both systems at the same point. Walkthrough: [`demos/crash_demo.md`](demos/crash_demo.md).
 
-- **Without Temporal:** resume with `--run-id`. Expect partial recovery and re-paid work.
-- **With Temporal:** restart the Worker. The Workflow Execution continues; completed Activities are not re-run when history is replayed.
+- **Without Temporal:** resume with `--run-id`. Expect partial recovery and re-paid work. Tutorial: [`content/tutorials/02-crash-without-temporal.md`](content/tutorials/02-crash-without-temporal.md).
+- **With Temporal:** restart the Worker. The Workflow Execution continues; completed Activities are not re-run when history is replayed. Tutorial: [`content/tutorials/03-crash-with-temporal.md`](content/tutorials/03-crash-with-temporal.md).
 
 ---
 
@@ -215,7 +217,7 @@ requirements.txt        # Pip-friendly install list
 |------|----------|
 | `content/concepts/` | Temporal vocabulary, FBO, intentional recovery gaps |
 | `content/drafts/` | Long-form posts (01 crash, 02 HITL, 03 eval, 04 lab, 05 parallel tools) |
-| `content/tutorials/` | Step-by-step how-tos |
+| `content/tutorials/` | Step-by-step how-tos (Showcase, CLI crash, Temporal Worker) |
 | `content/decks/` | Slide decks and outlines |
 | `content/assets/diagrams/` | Infographics (SVG + PNG) |
 | `content/assets/media/` | Screenshots and demo video |

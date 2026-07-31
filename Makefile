@@ -1,10 +1,11 @@
-.PHONY: help install install-dev ui worker run-without run-with demo-server test lint
+.PHONY: help install install-dev ui worker run-without run-with demo-server test lint demo
 
 help:
 	@echo "Targets:"
 	@echo "  install       Install runtime dependencies"
 	@echo "  install-dev   Install runtime + dev dependencies"
 	@echo "  ui            Start experiment UI on :8765"
+	@echo "  demo          Alias for ui (Showcase first look)"
 	@echo "  worker        Start Temporal Worker"
 	@echo "  run-without   Non-Temporal auto-approve run"
 	@echo "  run-with      Temporal auto-approve run (needs server + worker)"
@@ -21,6 +22,8 @@ install-dev:
 
 ui:
 	python -m ui.app
+
+demo: ui
 
 worker:
 	python -m with_temporal.worker
