@@ -282,7 +282,7 @@ Start with Showcase. If the token gap is obvious without a lecture, the control 
 
 | B1 | Parallel tools: gather vs concurrent Activities (post 05) |
 | B2 | Evaluation in the loop (faithfulness / relevance / 0.7 gate) |
-| B3 | Live mode: Crash / Resume non-Temporal; Temporal event stream |
+| B3 | Live mode: Crash / Resume non-Temporal; Temporal event stream ([tutorial 04](../tutorials/04-live-mode.md)) |
 | B4 | Crash at searching / evaluating (Showcase selector) |
 | B5 | Glossary: Workflow Execution, Activity, Event History, Signal, Query |
 | B6 | Recovery gap catalog (full six) |

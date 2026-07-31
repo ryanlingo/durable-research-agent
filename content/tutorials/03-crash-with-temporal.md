@@ -89,7 +89,7 @@ That is a **Signal** into the Workflow Execution. No application poll loop is re
 
 ## Live UI
 
-With server + worker up:
+With server + worker up, use the full Live walkthrough: [`04-live-mode.md`](04-live-mode.md).
 
 ```bash
 python -m ui.app

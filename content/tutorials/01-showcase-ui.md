@@ -69,8 +69,9 @@ Mid-search highlights the gather-vs-concurrent-Activities story (post 05). Mid-e
 
 ## Next
 
+- Live mode (real keys + Crash/Resume): [`04-live-mode.md`](04-live-mode.md)  
 - CLI crash without Temporal: [`02-crash-without-temporal.md`](02-crash-without-temporal.md)  
 - Worker kill with Temporal: [`03-crash-with-temporal.md`](03-crash-with-temporal.md)  
 - Short dual procedure: [`../../demos/crash_demo.md`](../../demos/crash_demo.md)  
-- Talk deck outline: [`../decks/2026-07-31-durable-agents-crash-lab-outline.md`](../decks/2026-07-31-durable-agents-crash-lab-outline.md)  
+- Talk deck: [`../decks/2026-07-31-durable-agents-crash-lab.pptx`](../decks/2026-07-31-durable-agents-crash-lab.pptx)  
 - Demo video: [`../assets/media/2026-07-31-showcase-crash-demo.mp4`](../assets/media/2026-07-31-showcase-crash-demo.mp4)  

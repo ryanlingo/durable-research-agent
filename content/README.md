@@ -13,7 +13,7 @@ Writing and teaching assets derived from this repo.
 |------|------|
 | `concepts/` | Temporal vocabulary, FBO messaging, recovery-gap catalog |
 | `drafts/` | Long-form blog posts (01–05 ready) |
-| `tutorials/` | Step-by-step how-tos (01 Showcase, 02 non-Temporal crash, 03 Temporal Worker) |
+| `tutorials/` | How-tos 01–04 (Showcase, CLI crashes, Temporal Worker, Live mode) |
 | `decks/` | Slide decks and outlines (crash-lab outline ready) |
 | `social/` | LinkedIn / X cuts |
 | `series/` | Multi-post arcs and calendar |

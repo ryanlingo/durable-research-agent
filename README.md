@@ -137,7 +137,7 @@ python -m ui.app
 | **Showcase** | Scripted dual crash and token comparison. No API keys or Temporal Service. |
 | **Live** | Real agents. Crash/resume non-Temporal from the UI. Temporal needs a Worker and `temporal server start-dev`. |
 
-Step-by-step: [`content/tutorials/01-showcase-ui.md`](content/tutorials/01-showcase-ui.md). Full tutorial index: [`content/tutorials/`](content/tutorials/).
+Step-by-step: [`content/tutorials/01-showcase-ui.md`](content/tutorials/01-showcase-ui.md) (Showcase) · [`content/tutorials/04-live-mode.md`](content/tutorials/04-live-mode.md) (Live). Full index: [`content/tutorials/`](content/tutorials/).
 
 ### Non-Temporal CLI
 
@@ -217,7 +217,7 @@ requirements.txt        # Pip-friendly install list
 |------|----------|
 | `content/concepts/` | Temporal vocabulary, FBO, intentional recovery gaps |
 | `content/drafts/` | Long-form posts (01 crash, 02 HITL, 03 eval, 04 lab, 05 parallel tools) |
-| `content/tutorials/` | Step-by-step how-tos (Showcase, CLI crash, Temporal Worker) |
+| `content/tutorials/` | How-tos: Showcase, CLI crashes, Temporal Worker, Live mode |
 | `content/decks/` | Crash-lab talk deck (`.pptx` + outline) |
 | `content/assets/diagrams/` | Infographics (SVG + PNG) |
 | `content/assets/media/` | Screenshots and demo video |
