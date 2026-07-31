@@ -82,12 +82,6 @@ In the scripted Showcase demo (no API keys, forced mid-write crash), non-Tempora
 
 ![After the crash: Temporal savings panel](content/assets/media/2026-07-31-showcase-comparison-panel.png)
 
-### What this project is *not*
-
-- Not a claim that Temporal is magic or that the non-Temporal side is dumb. The non-Temporal path has retries, checkpoints, and approval on purpose. It is a fair “serious first production cut.”
-- Not a full production product. It is a **lab**: fixed doc corpus, optional mock search, dual UI for teaching.
-- Not “how to write better prompts.” Prompts are shared; the experiment is orchestration.
-
 ### How to explore the lesson
 
 1. **Showcase UI** (fastest): run the dual crash animation, read the savings panel. No keys.  
