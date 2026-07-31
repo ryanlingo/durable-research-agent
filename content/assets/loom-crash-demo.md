@@ -1,48 +1,66 @@
 ---
 title: Crash demo recording script
-status: draft
+status: ready
 series: durable-agents
-style: context/STYLE.md
+item: P3.2
 duration: 90-120s
 ---
 
-# Recording script: kill the agent, show what survives
+# P3.2 only: record the crash demo
 
-A viewer should understand the thesis without reading the repo.
+**Feature:** Showcase UI runs both stacks through a mid-write crash.  
+**Benefit:** Viewer sees lost work, re-paid tokens, and resume without reading code.  
+**Outcome:** They understand why Durable Execution matters for agents.
 
-## Setup
+Do not start screenshots or post polish until this recording is saved.
 
-1. `python -m ui.app`, Showcase mode, pace Talk
-2. Experiment UI full screen
-3. Optional second window: Temporal UI for a longer cut
-4. Notifications off
+## Setup (once)
 
-## Shot list
+```bash
+cd /Users/ryan/Desktop/durable-research-agent
+source .venv/bin/activate
+python -m ui.app
+```
 
-| Time | Visual | Voice |
-|------|--------|-------|
-| 0:00-0:10 | UI header or dual pipelines idle | Same research agent, two stacks. Both get crashed mid-write. |
-| 0:10-0:25 | Run experiment; pipeline advances | Clarify, plan, retrieve, search. Both healthy. |
-| 0:25-0:40 | Crash on both columns | Process dies while writing the report. |
-| 0:40-0:55 | Non-Temporal recovery events | Partial checkpoint recovery. In-flight work gone. Paid work runs again. |
-| 0:55-1:10 | Temporal recovery events | Worker can die; Event History remains. Resume the unfinished Activity. |
-| 1:10-1:25 | Token comparison bars | The reliability bug shows up as money. |
-| 1:25-1:40 | Comparison headline | Retries and SQLite help. They are not Durable Execution. |
+1. Open http://127.0.0.1:8765  
+2. Mode: **Showcase (scripted crash)**  
+3. Pace: **Talk**  
+4. Auto-approve: on  
+5. Browser full screen; quit notifications  
+6. Cursor large enough to read on a laptop recording  
 
-## Optional B-roll (3-minute cut)
+UI is already up if that URL loads.
 
-CLI kill and restart of the non-Temporal run with `--run-id`. Temporal Web UI Event History after worker restart. Approval as poll loop versus Signal.
+## Record (one take, ~90–120s)
 
-## Description paste
+| Time | Do this | Say this |
+|------|---------|----------|
+| 0:00–0:10 | Dual columns idle on screen | Same research agent, two stacks. Both get crashed mid-write. |
+| 0:10–0:25 | Click **Run experiment**. Watch pipelines advance | Clarify, plan, retrieve, search. Both healthy. |
+| 0:25–0:40 | Point at crash / lost mid-write on both sides | Process dies while writing the report. |
+| 0:40–0:55 | Left column recovery events | Partial checkpoint recovery. In-flight work gone. Paid work runs again. |
+| 0:55–1:10 | Right column recovery events | Worker can die; Event History remains. Resume the unfinished Activity. |
+| 1:10–1:25 | Token comparison bars | The reliability bug shows up as money. |
+| 1:25–1:40 | Hold comparison headline | Retries and SQLite help. They are not Durable Execution. |
+
+Stop. Do not add B-roll in this pass.
+
+## Save
+
+1. Export the Loom (or screen recording)  
+2. Put a link (or file path) in `content/assets/media/LINKS.md`  
+3. Tell me when it is done so we mark **P3.2 complete** and move to **P3.3 screenshots only**
+
+## Description paste (Loom / YouTube)
 
 ```
 Same multi-step research agent twice: asyncio + checkpoints vs Temporal.
 Crash both mid-write; compare recovery and token cost.
 
-Repo: [link]
+Repo: https://github.com/ryanlingo/durable-research-agent
 UI: python -m ui.app → Showcase
 ```
 
 ## Thumbnail
 
-Dual pipelines. Left marked crashed / re-paid. Right marked resumed. Word on the image: TOKENS.
+Dual pipelines. Left: crashed / re-paid. Right: resumed. Word on image: **TOKENS**.

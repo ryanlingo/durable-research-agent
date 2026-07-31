@@ -64,11 +64,11 @@ function setModeHint() {
   if (mode === "live") {
     live.classList.remove("hidden");
     $("modeHint").textContent =
-      "Live mode runs real agents. Temporal needs `temporal server start-dev` + `python -m with_temporal.worker`. Use Crash/Resume on the non-Temporal side.";
+      "Live: real agents. Needs Temporal server + worker. Crash/Resume acts on the non-Temporal side.";
   } else {
     live.classList.add("hidden");
     $("modeHint").textContent =
-      "Showcase animates both paths through a mid-write crash — no API keys or Temporal server required.";
+      "Showcase: scripted mid-write crash. No API keys or Temporal server.";
   }
 }
 
@@ -78,7 +78,7 @@ function resetSide(side) {
   $(`status${suffix}`).textContent = "idle";
   $(`status${suffix}`).className = "status-chip" + (side === "with" ? " good" : "");
   $(`tokens${suffix}`).textContent = "0";
-  $(`run${suffix}`).textContent = "—";
+  $(`run${suffix}`).textContent = "-";
   $(`events${suffix}`).innerHTML = "";
   $(`reportPanel${suffix}`).classList.add("hidden");
   $(`report${suffix}`).textContent = "";
@@ -251,7 +251,7 @@ function applySideEvent(side, event) {
 }
 
 function num(v) {
-  if (v == null || Number.isNaN(Number(v))) return "—";
+  if (v == null || Number.isNaN(Number(v))) return "-";
   return Number(v).toFixed(2);
 }
 
@@ -276,13 +276,18 @@ function showComparison(comparison) {
     li.textContent = b;
     ul.appendChild(li);
   }
-  const waste = comparison.wasted_tokens ?? Math.max(
-    0,
-    (comparison.without_tokens || 0) - (comparison.with_tokens || 0)
-  );
-  $("wastePill").textContent = `~${formatTokens(waste)} tokens wasted (non-Temporal)`;
-  const a = comparison.without_tokens || state.sides.without.tokens;
-  const b = comparison.with_tokens || state.sides.with.tokens;
+  const a = comparison.without_tokens || state.sides.without.tokens || 0;
+  const b = comparison.with_tokens || state.sides.with.tokens || 0;
+  const waste = comparison.wasted_tokens ?? Math.max(0, a - b);
+  let pct = comparison.savings_percent;
+  if (pct == null || Number.isNaN(Number(pct))) {
+    pct = a > 0 ? Math.round((1000 * waste) / a) / 10 : 0;
+  }
+  const pctLabel = Number(pct).toLocaleString(undefined, {
+    maximumFractionDigits: 1,
+  });
+  $("wastePill").textContent =
+    `Temporal saved ~${formatTokens(waste)} tokens · ${pctLabel}%`;
   const max = Math.max(a, b, 1);
   $("barWithout").style.width = `${(a / max) * 100}%`;
   $("barWith").style.width = `${(b / max) * 100}%`;

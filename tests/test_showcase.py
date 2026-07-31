@@ -27,7 +27,12 @@ async def test_run_showcase_completes_with_comparison() -> None:
     assert snap["comparison"]["without_tokens"] == w
     assert snap["comparison"]["with_tokens"] == t
     assert snap["comparison"]["wasted_tokens"] == w - t
+    expected_pct = round(100.0 * (w - t) / w, 1)
+    assert snap["comparison"]["savings_percent"] == expected_pct
+    assert expected_pct > 0
     assert "headline" in snap["comparison"]
+    assert "Temporal saved" in snap["comparison"]["headline"]
+    assert "%" in snap["comparison"]["headline"]
 
 
 @pytest.mark.asyncio

@@ -1,50 +1,70 @@
 ---
 title: Launch thread and LinkedIn
-status: draft
+status: ready
 source: drafts/01-not-durable-with-checkpoints.md
 style: context/STYLE.md
+repo: https://github.com/ryanlingo/durable-research-agent
+media:
+  - ../assets/media/2026-07-31-showcase-mid-run.png
+  - ../assets/media/2026-07-31-showcase-comparison-panel.png
+---
+
+# How to post
+
+1. Attach mid-run UI + savings panel (or full comparison page).
+2. Paste X thread as a thread; paste LinkedIn as one post.
+3. Link the repo once at the end of each.
+
+Do not wait on the Loom. Post 01 is ready if you want a longer link later.
+
 ---
 
 # X thread
 
-1/ I built the same AI research agent twice (asyncio + retries + SQLite checkpoints, and Temporal), then killed both mid-write.
+1/ Retries and SQLite checkpoints do not make an agent durable. They make it slightly less fragile until the process dies mid-call.
 
-The difference is the curriculum.
+2/ I built the same multi-step research agent twice: asyncio + tenacity + SQLite checkpoints, and Temporal (Workflow Execution, Activities, Signals).
 
-2/ Both do: clarify → plan → RAG → parallel search → write → LLM judge → human approval.
+Same tools, prompts, RAG, judge, and token counters. Only orchestration changes. Then both get crashed mid-write.
 
-Same tools, prompts, and token accounting. Only orchestration changes.
+3/ Non-Temporal side is not a strawman. It has retries, checkpoints, and an approval gate.
 
-3/ The non-Temporal side has tenacity retries, checkpoints after major steps, and an approval table.
+It still loses the in-flight draft. Recovery is incomplete by default. You often re-pay work you thought you saved.
 
-It still loses work when the process dies mid-LLM call.
+4/ Temporal: the Worker can die; the Workflow Execution does not. Event History is replayed. Completed Activities are not re-run.
 
-4/ After restart: in-flight draft gone, recovery incomplete by default, tokens often paid again for steps you thought you saved.
+5/ Scripted Showcase numbers (same crash story, no API keys):
 
-5/ Temporal: the Worker can die; the Workflow Execution does not. Completed Activities stay completed. Event History is the record of what happened.
+Without Temporal: ~6,520 tokens  
+With Temporal: ~4,590 tokens  
+Temporal savings: ~1,930 tokens (29.6% of the non-Temporal bill)
 
-6/ If a crash doubles your token bill, your control plane is incomplete.
+6/ Reliability shows up on the invoice. If a crash doubles spend, the control plane is incomplete.
 
-7/ Dual-column experiment UI in the repo. Showcase mode needs no API keys.
+7/ Dual-column experiment UI is in the repo. Showcase mode needs no API keys and no Temporal server.
 
-8/ Retries ≠ durability. Checkpoints ≠ durable execution.
+https://github.com/ryanlingo/durable-research-agent
 
-[repo link]
+8/ Retries ≠ durability. Checkpoints ≠ Durable Execution.
 
 ---
 
 # LinkedIn
 
-Most production AI agents are one pod restart away from losing the expensive middle of a run.
+Retries and SQLite checkpoints do not make an agent durable. They make it slightly less fragile until the process dies mid-call.
 
-I implemented the same multi-step research agent twice: asyncio + tenacity + SQLite checkpoints + polling approval, and Temporal (Workflow, Activities, Signals). Same RAG, tools, judge prompt, and token counters. Then I crash both mid-write.
+I built the same multi-step research agent twice: once with asyncio, tenacity, SQLite checkpoints, and polling approval; once with Temporal (Workflow Execution, Activities, Signals, Event History). Same tools, prompts, RAG, and token counters. Only the control plane changes. Then both get crashed mid-write.
 
 The non-Temporal path still does the responsible things. Recovery is still partial. In-flight LLM work is still gone. The token bill still climbs.
 
 The Temporal path resumes by replaying Event History. Completed Activities are not re-run. Human approval is a Signal, not a live polling process.
 
+In the scripted Showcase demo (forced mid-write crash): non-Temporal ~6,520 tokens, Temporal ~4,590. Temporal savings ~1,930 tokens, about 29.6% of the non-Temporal bill.
+
 The metric that travels: tokens after crash-and-restart.
 
-Lab and dual-pipeline UI are in the repo, including a Showcase mode built for screen recordings.
+Lab, dual-pipeline UI, and write-up:
 
-Which crash point would you instrument first in your own agent: write, tool batch, or approval wait?
+https://github.com/ryanlingo/durable-research-agent
+
+Attach: side-by-side mid-run UI + “Temporal saved … 29.6%” panel.

@@ -399,25 +399,13 @@ async def run_showcase(
         )
         return
 
-    # Build comparison from final token totals
-    w_tokens = session.without.tokens.get("total_tokens", 0)
-    t_tokens = session.with_temporal.tokens.get("total_tokens", 0)
-    waste = max(0, w_tokens - t_tokens)
-    session.comparison = {
-        "without_tokens": w_tokens,
-        "with_tokens": t_tokens,
-        "wasted_tokens": waste,
-        "headline": (
-            f"Non-Temporal re-paid ~{waste} tokens after the crash. "
-            f"Temporal resumed via Event History replay; "
-            f"completed Activities were not re-run."
-        ),
-        "bullets": [
-            "Without Temporal: incomplete checkpoint recovery re-executed paid LLM work",
-            "With Temporal: Durable Execution via Event History; completed Activity results reused",
-            "Human approval: process poll loop vs Signal",
-        ],
-    }
+    from ui.comparison import build_comparison
+
+    session.comparison = build_comparison(
+        session.without.tokens.get("total_tokens", 0),
+        session.with_temporal.tokens.get("total_tokens", 0),
+        mode="showcase",
+    )
     await session.publish(
         {
             "side": "system",

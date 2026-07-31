@@ -3,20 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Durable Research Agent — Experiment</title>
+  <title>Durable Research Agent</title>
   <link rel="stylesheet" href="/static/styles.css" />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 <body>
   <div class="app">
     <header class="top">
       <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
         <div>
           <h1>Durable Research Agent</h1>
-          <p class="subtitle">Side-by-side experiment · crash recovery · token waste</p>
+          <p class="subtitle">Side-by-side crash recovery experiment</p>
         </div>
       </div>
       <div class="top-meta" id="sessionMeta">No active session</div>
@@ -25,7 +21,7 @@
     <section class="controls card">
       <div class="controls-grid">
         <label class="field grow">
-          <span>Research query</span>
+          <span>Query</span>
           <input id="query" type="text"
             value="How does durable execution help AI agents survive process crashes?" />
         </label>
@@ -33,8 +29,8 @@
         <label class="field">
           <span>Mode</span>
           <select id="mode">
-            <option value="showcase" selected>Showcase (scripted crash)</option>
-            <option value="live">Live agents</option>
+            <option value="showcase" selected>Showcase</option>
+            <option value="live">Live</option>
           </select>
         </label>
 
@@ -54,7 +50,7 @@
       </div>
 
       <div class="control-actions">
-        <button id="btnStart" class="btn primary">Run experiment</button>
+        <button id="btnStart" class="btn primary">Run</button>
         <button id="btnStop" class="btn ghost" disabled>Stop</button>
         <div class="live-only hidden" id="liveControls">
           <button id="btnCrash" class="btn danger">Crash non-Temporal</button>
@@ -65,14 +61,14 @@
       </div>
 
       <p class="hint" id="modeHint">
-        Showcase animates both paths through a mid-write crash — no API keys or Temporal server required.
+        Showcase: scripted mid-write crash. No API keys or Temporal server.
       </p>
     </section>
 
     <section class="comparison card hidden" id="comparison">
       <div class="comparison-head">
         <h2>After the crash</h2>
-        <div class="waste-pill" id="wastePill">—</div>
+        <div class="waste-pill" id="wastePill">-</div>
       </div>
       <p class="comparison-headline" id="comparisonHeadline"></p>
       <ul id="comparisonBullets"></ul>
@@ -91,11 +87,10 @@
     </section>
 
     <main class="boards">
-      <!-- WITHOUT -->
-      <article class="board card" data-side="without">
+      <article class="board" data-side="without">
         <header class="board-head">
           <div>
-            <p class="eyebrow">Typical production stack</p>
+            <p class="eyebrow">Typical stack</p>
             <h2>Without Temporal</h2>
           </div>
           <div class="status-chip" id="statusWithout">idle</div>
@@ -108,7 +103,7 @@
           </div>
           <div class="metric">
             <span>Run ID</span>
-            <strong class="mono small" id="runWithout">—</strong>
+            <strong class="mono small" id="runWithout">-</strong>
           </div>
           <div class="metric">
             <span>Recovery</span>
@@ -119,25 +114,24 @@
         <ol class="pipeline" id="pipeWithout"></ol>
 
         <div class="panel">
-          <div class="panel-title">Event stream</div>
+          <div class="panel-title">Events</div>
           <div class="events" id="eventsWithout"></div>
         </div>
 
         <div class="panel report-panel hidden" id="reportPanelWithout">
-          <div class="panel-title">Report / evaluation</div>
+          <div class="panel-title">Report</div>
           <div class="eval" id="evalWithout"></div>
           <pre class="report" id="reportWithout"></pre>
         </div>
       </article>
 
-      <!-- WITH -->
-      <article class="board card" data-side="with">
+      <article class="board" data-side="with">
         <header class="board-head">
           <div>
-            <p class="eyebrow">Durable execution</p>
+            <p class="eyebrow">Durable Execution</p>
             <h2>With Temporal</h2>
           </div>
-          <div class="status-chip good" id="statusWith">idle</div>
+          <div class="status-chip" id="statusWith">idle</div>
         </header>
 
         <div class="metrics">
@@ -147,23 +141,23 @@
           </div>
           <div class="metric">
             <span>Workflow ID</span>
-            <strong class="mono small" id="runWith">—</strong>
+            <strong class="mono small" id="runWith">-</strong>
           </div>
           <div class="metric">
             <span>Recovery</span>
-            <strong id="recoveryWith">event history</strong>
+            <strong id="recoveryWith">Event History</strong>
           </div>
         </div>
 
         <ol class="pipeline" id="pipeWith"></ol>
 
         <div class="panel">
-          <div class="panel-title">Event stream</div>
+          <div class="panel-title">Events</div>
           <div class="events" id="eventsWith"></div>
         </div>
 
         <div class="panel report-panel hidden" id="reportPanelWith">
-          <div class="panel-title">Report / evaluation</div>
+          <div class="panel-title">Report</div>
           <div class="eval" id="evalWith"></div>
           <pre class="report" id="reportWith"></pre>
         </div>
@@ -171,8 +165,8 @@
     </main>
 
     <footer class="foot">
-      <span>Pipeline: clarify → plan → retrieve → search → write → evaluate → approve</span>
-      <span class="mono">localhost:8765</span>
+      <span>clarify → plan → retrieve → search → write → evaluate → approve</span>
+      <span class="mono">:8765</span>
     </footer>
   </div>
 

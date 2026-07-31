@@ -262,7 +262,39 @@ async def start_live_session(session: Session, sides: str = "both") -> None:
     if sides in ("both", "with"):
         task = asyncio.create_task(run_with_temporal(session))
         session.tasks["live_with"] = task
+    if sides == "both":
+        session.tasks["live_compare"] = asyncio.create_task(
+            _publish_live_comparison_when_done(session)
+        )
 
+
+async def _publish_live_comparison_when_done(session: Session) -> None:
+    """When both live sides finish, publish Temporal savings comparison."""
+    from ui.comparison import build_comparison
+
+    tasks = [
+        t
+        for name, t in session.tasks.items()
+        if name in ("live_without", "live_with") and t is not None
+    ]
+    if not tasks:
+        return
+    await asyncio.gather(*tasks, return_exceptions=True)
+    if session.closed:
+        return
+
+    # Prefer completed totals; still show a comparison if one side errored with partial tokens
+    w = session.without.tokens.get("total_tokens", 0)
+    t = session.with_temporal.tokens.get("total_tokens", 0)
+    session.comparison = build_comparison(w, t, mode="live")
+    await session.publish(
+        {
+            "side": "system",
+            "type": "comparison",
+            "comparison": session.comparison,
+            "message": session.comparison["headline"],
+        }
+    )
 
 async def crash_without(session: Session) -> None:
     task = session.tasks.get("live_without")
