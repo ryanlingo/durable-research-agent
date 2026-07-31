@@ -33,6 +33,14 @@ async def test_run_showcase_completes_with_comparison() -> None:
     assert "headline" in snap["comparison"]
     assert "Temporal saved" in snap["comparison"]["headline"]
     assert "%" in snap["comparison"]["headline"]
+    # Crash script re-plans + rewrites on the non-Temporal side
+    re_ran = snap["comparison"].get("re_executed") or []
+    assert re_ran
+    steps = {item["step"] for item in re_ran}
+    assert "planning" in steps
+    assert "writing" in steps
+    assert snap["comparison"]["re_executed_tokens"] > 0
+    assert snap["without"].get("re_executed")
 
 
 @pytest.mark.asyncio

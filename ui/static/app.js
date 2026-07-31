@@ -293,6 +293,31 @@ function showComparison(comparison) {
   $("barWith").style.width = `${(b / max) * 100}%`;
   $("barWithoutLabel").textContent = formatTokens(a);
   $("barWithLabel").textContent = formatTokens(b);
+
+  const reRan = comparison.re_executed || [];
+  const reBlock = $("reRanBlock");
+  const reList = $("reRanList");
+  const reTotal = $("reRanTotal");
+  if (reRan.length) {
+    reBlock.classList.remove("hidden");
+    reList.innerHTML = "";
+    for (const item of reRan) {
+      const li = document.createElement("li");
+      const step = item.step || "?";
+      const tok = Number(item.tokens || 0);
+      const reason = item.reason ? ` — ${item.reason}` : "";
+      li.textContent = `${step}: +${formatTokens(tok)} tokens${reason}`;
+      reList.appendChild(li);
+    }
+    const reTok =
+      comparison.re_executed_tokens ??
+      reRan.reduce((s, x) => s + Number(x.tokens || 0), 0);
+    reTotal.textContent = `Re-paid after resume: ${formatTokens(reTok)} tokens`;
+  } else {
+    reBlock.classList.add("hidden");
+    reList.innerHTML = "";
+    reTotal.textContent = "";
+  }
 }
 
 function handleEvent(event) {

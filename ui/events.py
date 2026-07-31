@@ -28,6 +28,9 @@ class SideState:
     report: str | None = None
     evaluation: dict[str, Any] | None = None
     events: list[dict[str, Any]] = field(default_factory=list)
+    re_executed: list[dict[str, Any]] = field(default_factory=list)
+    re_executed_tokens: int = 0
+    tokens_at_resume: int | None = None
 
 
 @dataclass
@@ -77,11 +80,35 @@ class Session:
             side.status = "crashed"
         if event.get("type") in ("recovered", "run_started") and side.crashed:
             side.crashed = False
+        if event.get("tokens_at_resume") is not None:
+            side.tokens_at_resume = int(event["tokens_at_resume"] or 0)
+        if event.get("type") == "re_executed" or event.get("re_executed") is not None:
+            reruns = event.get("re_executed")
+            if isinstance(reruns, list):
+                side.re_executed = list(reruns)
+                side.re_executed_tokens = sum(
+                    int(x.get("tokens", 0) or 0) for x in side.re_executed
+                )
+            elif event.get("re_executed_step"):
+                step = event["re_executed_step"]
+                if isinstance(step, dict):
+                    side.re_executed.append(step)
+                    side.re_executed_tokens = sum(
+                        int(x.get("tokens", 0) or 0) for x in side.re_executed
+                    )
+        if event.get("re_executed_tokens") is not None:
+            side.re_executed_tokens = int(event["re_executed_tokens"] or 0)
         if event.get("type") == "completed":
             side.status = "completed"
             side.report = event.get("report")
             side.evaluation = event.get("evaluation")
             side.crashed = False
+            if isinstance(event.get("re_executed"), list):
+                side.re_executed = list(event["re_executed"])
+                side.re_executed_tokens = int(
+                    event.get("re_executed_tokens")
+                    or sum(int(x.get("tokens", 0) or 0) for x in side.re_executed)
+                )
         if event.get("report") and not side.report:
             side.report = event["report"]
         if event.get("evaluation"):
@@ -100,6 +127,9 @@ class Session:
                 "crashed": self.without.crashed,
                 "report": self.without.report,
                 "evaluation": self.without.evaluation,
+                "re_executed": self.without.re_executed,
+                "re_executed_tokens": self.without.re_executed_tokens,
+                "tokens_at_resume": self.without.tokens_at_resume,
                 "events": self.without.events[-80:],
             },
             "with": {
@@ -109,6 +139,9 @@ class Session:
                 "crashed": self.with_temporal.crashed,
                 "report": self.with_temporal.report,
                 "evaluation": self.with_temporal.evaluation,
+                "re_executed": self.with_temporal.re_executed,
+                "re_executed_tokens": self.with_temporal.re_executed_tokens,
+                "tokens_at_resume": self.with_temporal.tokens_at_resume,
                 "events": self.with_temporal.events[-80:],
             },
             "comparison": self.comparison,

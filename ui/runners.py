@@ -268,25 +268,70 @@ async def start_live_session(session: Session, sides: str = "both") -> None:
         )
 
 
+_TERMINAL_WITHOUT = frozenset({"completed", "error", "rejected"})
+_TERMINAL_WITH = frozenset(
+    {"completed", "error", "failed", "canceled", "cancelled", "terminated", "timed_out"}
+)
+
+
 async def _publish_live_comparison_when_done(session: Session) -> None:
-    """When both live sides finish, publish Temporal savings comparison."""
+    """When both live sides finish (after any crash+resume), publish savings.
+
+    Do not publish on the first cancelled non-Temporal task: the user may still
+    hit Resume. Poll until both sides are terminal or the session closes.
+    """
     from ui.comparison import build_comparison
 
-    tasks = [
+    # Wait for both original tasks at least once so we don't race start.
+    initial = [
         t
-        for name, t in session.tasks.items()
+        for name, t in list(session.tasks.items())
         if name in ("live_without", "live_with") and t is not None
     ]
-    if not tasks:
-        return
-    await asyncio.gather(*tasks, return_exceptions=True)
+    if initial:
+        await asyncio.gather(*initial, return_exceptions=True)
+
+    # Crash cancels without early; wait for resume to reach a terminal status
+    # (or an error that is not mid-flight crash).
+    while not session.closed:
+        w_task = session.tasks.get("live_without")
+        t_task = session.tasks.get("live_with")
+        w_status = session.without.status
+        t_status = session.with_temporal.status
+
+        without_busy = bool(w_task and not w_task.done())
+        with_busy = bool(t_task and not t_task.done())
+        without_crashed = session.without.crashed or w_status == "crashed"
+
+        without_terminal = w_status in _TERMINAL_WITHOUT and not without_busy
+        with_terminal = t_status in _TERMINAL_WITH and not with_busy
+
+        if without_crashed or without_busy or with_busy:
+            await asyncio.sleep(0.4)
+            continue
+        if without_terminal and with_terminal:
+            break
+        # Both tasks idle but not terminal (e.g. only one side started)
+        if not without_busy and not with_busy:
+            if without_terminal or with_terminal:
+                # One side finished; other never started — still publish what we have
+                break
+            await asyncio.sleep(0.4)
+            continue
+        await asyncio.sleep(0.4)
+
     if session.closed:
         return
 
-    # Prefer completed totals; still show a comparison if one side errored with partial tokens
     w = session.without.tokens.get("total_tokens", 0)
     t = session.with_temporal.tokens.get("total_tokens", 0)
-    session.comparison = build_comparison(w, t, mode="live")
+    session.comparison = build_comparison(
+        w,
+        t,
+        mode="live",
+        re_executed=session.without.re_executed,
+        tokens_at_resume=session.without.tokens_at_resume,
+    )
     await session.publish(
         {
             "side": "system",
@@ -295,6 +340,7 @@ async def _publish_live_comparison_when_done(session: Session) -> None:
             "message": session.comparison["headline"],
         }
     )
+
 
 async def crash_without(session: Session) -> None:
     task = session.tasks.get("live_without")
@@ -327,18 +373,26 @@ async def resume_without(session: Session) -> None:
             }
         )
         return
+    # Clear crashed flag so comparison waiter treats this as active again.
+    session.without.crashed = False
     await session.publish(
         {
             "side": "without",
             "type": "step",
             "run_id": rid,
-            "status": session.without.status,
+            "status": session.without.status if session.without.status != "crashed" else "started",
             "tokens": session.without.tokens,
             "message": f"Resuming run_id={rid} from checkpoint…",
         }
     )
     task = asyncio.create_task(run_without_temporal(session, run_id=rid))
     session.tasks["live_without"] = task
+    # Ensure a comparison waiter is running (first one may still be looping).
+    compare = session.tasks.get("live_compare")
+    if compare is None or compare.done():
+        session.tasks["live_compare"] = asyncio.create_task(
+            _publish_live_comparison_when_done(session)
+        )
 
 
 async def approve_without(session: Session, decision: str = "approved") -> None:

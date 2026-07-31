@@ -136,9 +136,43 @@ async def run_research(
         },
     )
 
+    # Track paid work that runs again after a checkpoint resume (not merely
+    # first-time stages that continue after recovery).
+    is_recovery = False
+    tokens_at_resume = 0
+    draft_present_at_resume = False
+    had_evaluation_at_resume = False
+    re_executed: list[dict[str, Any]] = []
+
+    async def note_rerun(step: str, usage: TokenUsage, reason: str) -> None:
+        """Record a stage that re-paid tokens after partial recovery."""
+        entry = {
+            "step": step,
+            "tokens": int(usage.total_tokens or 0),
+            "reason": reason,
+        }
+        re_executed.append(entry)
+        await _emit(
+            on_event,
+            {
+                "side": "without",
+                "type": "re_executed",
+                "run_id": run_id,
+                "status": step,
+                "tokens": state.total_tokens.to_dict(),
+                "re_executed_step": entry,
+                "re_executed": list(re_executed),
+                "message": (
+                    f"Re-ran {step} after resume · +{entry['tokens']} tokens "
+                    f"({reason})"
+                ),
+            },
+        )
+
     # Attempt recovery from checkpoint
     raw = load_state(run_id)
     if raw:
+        is_recovery = True
         _log("Found existing checkpoint — attempting partial recovery")
         state = AgentState(query=raw.get("query", query))
         state.status = raw.get("status", "started")
@@ -162,17 +196,29 @@ async def run_research(
         state.draft_report = raw.get("draft_report")
         if raw.get("evaluation"):
             ev = raw["evaluation"]
+            eval_tokens = ev.get("tokens") or {}
             state.evaluation = EvaluationResult(
                 faithfulness=ev.get("faithfulness", 0),
                 relevance=ev.get("relevance", 0),
                 overall=ev.get("overall", 0),
                 reasoning=ev.get("reasoning", ""),
+                tokens=TokenUsage(**eval_tokens) if eval_tokens else TokenUsage(),
             )
         state.approval_status = raw.get("approval_status", "pending")
         tok = raw.get("total_tokens", {})
         state.total_tokens = TokenUsage(**tok) if tok else TokenUsage()
         state.history = raw.get("history", [])
-        _log(f"Recovered status={state.status}, plan={len(state.search_plan)} queries")
+        tokens_at_resume = state.total_tokens.total_tokens
+        draft_present_at_resume = bool(state.draft_report)
+        had_evaluation_at_resume = bool(state.evaluation)
+        # Prior re-ran steps from earlier resume attempts (cumulative waste).
+        prior_re = raw.get("re_executed") or []
+        if isinstance(prior_re, list):
+            re_executed.extend(prior_re)
+        _log(
+            f"Recovered status={state.status}, plan={len(state.search_plan)} queries, "
+            f"tokens_at_resume={tokens_at_resume}"
+        )
         await _emit(
             on_event,
             {
@@ -181,9 +227,12 @@ async def run_research(
                 "run_id": run_id,
                 "status": state.status,
                 "tokens": state.total_tokens.to_dict(),
+                "tokens_at_resume": tokens_at_resume,
+                "draft_present": draft_present_at_resume,
                 "message": (
                     f"Partial recovery from checkpoint at '{state.status}' "
-                    f"(tokens so far: {state.total_tokens.total_tokens})"
+                    f"(tokens so far: {tokens_at_resume}; "
+                    f"draft {'present' if draft_present_at_resume else 'missing'})"
                 ),
             },
         )
@@ -193,7 +242,11 @@ async def run_research(
     async def checkpoint(step: str, message: str | None = None) -> None:
         state.history.append({"step": step, "ts": time.time()})
         state.status = step
-        save_state(run_id, state.checkpoint())
+        payload = state.checkpoint()
+        # Persist re-ran ledger so a second resume still shows cumulative waste.
+        payload["re_executed"] = list(re_executed)
+        payload["tokens_at_resume"] = tokens_at_resume
+        save_state(run_id, payload)
         _log(f"checkpointed at '{step}' (tokens so far: {state.total_tokens.total_tokens})")
         await _emit(
             on_event,
@@ -203,6 +256,7 @@ async def run_research(
                 "run_id": run_id,
                 "status": step,
                 "tokens": state.total_tokens.to_dict(),
+                "re_executed": list(re_executed),
                 "message": message
                 or f"Checkpointed at '{step}' · {state.total_tokens.total_tokens} tokens",
             },
@@ -290,9 +344,16 @@ async def run_research(
         await checkpoint("searched", f"Searched {len(results)} queries")
 
     # 4. Write + evaluate + refine
+    # Incomplete recovery (intentional): even if evaluation was checkpointed,
+    # we re-enter the write/eval loop when draft is missing or status is still
+    # mid-pipeline — and we re-evaluate when draft exists without short-circuiting
+    # on a saved evaluation. That re-pays judge tokens after some crashes.
     refinements = 0
     while True:
         if state.draft_report is None or refinements > 0:
+            rewriting_after_crash = (
+                is_recovery and refinements == 0 and not draft_present_at_resume
+            )
             await _emit(
                 on_event,
                 {
@@ -301,7 +362,11 @@ async def run_research(
                     "status": "writing",
                     "run_id": run_id,
                     "tokens": state.total_tokens.to_dict(),
-                    "message": "Writing draft report…",
+                    "message": (
+                        "Re-writing draft report (draft missing after crash)…"
+                        if rewriting_after_crash
+                        else "Writing draft report…"
+                    ),
                 },
             )
             draft, usage = await _write_report(
@@ -309,8 +374,15 @@ async def run_research(
             )
             state.draft_report = draft
             state.total_tokens.add(usage)
+            if rewriting_after_crash:
+                await note_rerun(
+                    "writing",
+                    usage,
+                    "draft missing after crash (in-flight write was not checkpointed)",
+                )
             await checkpoint("drafted")
 
+        reevaluating = is_recovery and had_evaluation_at_resume and refinements == 0
         await _emit(
             on_event,
             {
@@ -319,7 +391,12 @@ async def run_research(
                 "status": "evaluating",
                 "run_id": run_id,
                 "tokens": state.total_tokens.to_dict(),
-                "message": "Evaluating faithfulness + relevance…",
+                "message": (
+                    "Re-evaluating after resume (recovery does not short-circuit "
+                    "on saved evaluation)…"
+                    if reevaluating
+                    else "Evaluating faithfulness + relevance…"
+                ),
             },
         )
         context_texts = [c.content for c in state.retrieved_chunks]
@@ -329,6 +406,12 @@ async def run_research(
         )
         state.evaluation = evaluation
         state.total_tokens.add(evaluation.tokens)
+        if reevaluating:
+            await note_rerun(
+                "evaluating",
+                evaluation.tokens,
+                "judge re-run after resume (incomplete recovery path)",
+            )
         await checkpoint(
             "evaluated",
             f"Eval overall={evaluation.overall:.2f} "
@@ -411,6 +494,7 @@ async def run_research(
         )
         raise RuntimeError("Report rejected by human reviewer")
 
+    re_tokens = sum(int(x.get("tokens", 0) or 0) for x in re_executed)
     report = ResearchReport(
         query=effective_query,
         short_summary=(state.draft_report or "")[:280],
@@ -421,6 +505,9 @@ async def run_research(
     )
     state.final_report = report
     await checkpoint("completed", "Run completed")
+    completed_msg = f"Completed · {state.total_tokens.total_tokens} total tokens"
+    if re_executed:
+        completed_msg += f" · re-ran {len(re_executed)} step(s) (+{re_tokens} tokens after resume)"
     await _emit(
         on_event,
         {
@@ -429,6 +516,9 @@ async def run_research(
             "run_id": run_id,
             "status": "completed",
             "tokens": state.total_tokens.to_dict(),
+            "tokens_at_resume": tokens_at_resume if is_recovery else None,
+            "re_executed": list(re_executed),
+            "re_executed_tokens": re_tokens,
             "evaluation": {
                 "faithfulness": report.evaluation.faithfulness if report.evaluation else None,
                 "relevance": report.evaluation.relevance if report.evaluation else None,
@@ -436,7 +526,7 @@ async def run_research(
                 "reasoning": report.evaluation.reasoning if report.evaluation else None,
             },
             "report": report.markdown_report,
-            "message": f"Completed · {state.total_tokens.total_tokens} total tokens",
+            "message": completed_msg,
         },
     )
     return report

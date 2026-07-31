@@ -259,6 +259,40 @@ select:focus {
 
 .comparison li { margin: 4px 0; }
 
+.re-ran {
+  margin: 12px 0 16px;
+  padding: 12px 14px;
+  border: 1px dashed var(--ink);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.re-ran h3 {
+  margin: 0 0 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.re-ran ul {
+  margin: 0;
+  padding-left: 1.1rem;
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink);
+}
+
+.re-ran li {
+  margin: 4px 0;
+}
+
+.re-ran-total {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
 .token-bars { display: grid; gap: 10px; }
 
 .token-bar-row {
@@ -567,10 +601,15 @@ select:focus {
 }
 
 .event.completed,
-.event.recovered {
+.event.recovered,
+.event.re_executed {
   border-color: var(--ink);
   color: var(--ink);
   background: var(--fill);
+}
+
+.event.re_executed {
+  border-style: dashed;
 }
 
 .event.checkpoint,

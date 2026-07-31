@@ -91,6 +91,10 @@ async def run_showcase(
         }
     )
 
+    # Accumulated on the non-Temporal side for the comparison panel.
+    without_re_executed: list[dict] = []
+    without_tokens_at_resume: int | None = None
+
     async def run_side(
         side: str,
         run_id: str,
@@ -98,8 +102,10 @@ async def run_showcase(
         *,
         durable: bool,
     ) -> None:
+        nonlocal without_tokens_at_resume
         total = 0
         completed_before_crash: list[str] = []
+        re_executed: list[dict] = []
 
         await session.publish(
             {
@@ -203,6 +209,7 @@ async def run_showcase(
                     )
                 else:
                     last_good = completed_before_crash[-1] if completed_before_crash else "started"
+                    without_tokens_at_resume = total
                     await session.publish(
                         {
                             "side": side,
@@ -210,6 +217,8 @@ async def run_showcase(
                             "run_id": run_id,
                             "status": last_good,
                             "tokens": _tokens(total),
+                            "tokens_at_resume": total,
+                            "draft_present": False,
                             "message": (
                                 f"Partial recovery from SQLite at '{last_good}'. "
                                 f"Draft missing · recovery logic re-runs paid work."
@@ -221,13 +230,21 @@ async def run_showcase(
                     # Incomplete recovery often re-touches earlier steps
                     replan_cost = costs["planning"]
                     total += replan_cost
+                    entry = {
+                        "step": "planning",
+                        "tokens": replan_cost,
+                        "reason": "recovery edge case re-plans after crash",
+                    }
+                    re_executed.append(entry)
                     await session.publish(
                         {
                             "side": side,
-                            "type": "step",
+                            "type": "re_executed",
                             "run_id": run_id,
                             "status": "planning",
                             "tokens": _tokens(total),
+                            "re_executed_step": entry,
+                            "re_executed": list(re_executed),
                             "message": (
                                 f"Re-planning after crash (recovery edge case) · "
                                 f"+{replan_cost} tokens wasted"
@@ -238,13 +255,21 @@ async def run_showcase(
 
                     rewrite_cost = costs.get(stage, 0)
                     total += rewrite_cost
+                    entry = {
+                        "step": stage,
+                        "tokens": rewrite_cost,
+                        "reason": "draft missing; in-flight write was not checkpointed",
+                    }
+                    re_executed.append(entry)
                     await session.publish(
                         {
                             "side": side,
-                            "type": "step",
+                            "type": "re_executed",
                             "run_id": run_id,
                             "status": stage,
                             "tokens": _tokens(total),
+                            "re_executed_step": entry,
+                            "re_executed": list(re_executed),
                             "message": (
                                 f"Re-running {stage} from scratch · "
                                 f"+{rewrite_cost} tokens "
@@ -260,13 +285,16 @@ async def run_showcase(
                             "run_id": run_id,
                             "status": "drafted" if stage == "writing" else stage,
                             "tokens": _tokens(total),
+                            "re_executed": list(re_executed),
                             "message": f"Checkpointed again at '{stage}'",
                         }
                     )
                     completed_before_crash.append(stage)
+                    if side == "without":
+                        without_re_executed.clear()
+                        without_re_executed.extend(re_executed)
 
                 continue
-
             # Normal stage progression
             await session.publish(
                 {
@@ -401,10 +429,17 @@ async def run_showcase(
 
     from ui.comparison import build_comparison
 
+    # Prefer ledger accumulated during the non-Temporal crash path; fall back
+    # to whatever SideState collected from re_executed events.
+    reruns = without_re_executed or list(session.without.re_executed)
     session.comparison = build_comparison(
         session.without.tokens.get("total_tokens", 0),
         session.with_temporal.tokens.get("total_tokens", 0),
         mode="showcase",
+        re_executed=reruns,
+        tokens_at_resume=without_tokens_at_resume
+        if without_tokens_at_resume is not None
+        else session.without.tokens_at_resume,
     )
     await session.publish(
         {
