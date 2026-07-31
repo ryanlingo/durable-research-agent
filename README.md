@@ -41,6 +41,7 @@ Temporal terms follow the [Temporal glossary](https://docs.temporal.io/glossary)
 - [Temporal CLI](https://docs.temporal.io/cli) (for the Temporal path and Web UI)
 - OpenAI API key (live agents; Showcase UI does not need one)
 
+CI runs `ruff` and `pytest` on push and pull requests to `main` (no API keys required).
 ---
 
 ## Quick start
