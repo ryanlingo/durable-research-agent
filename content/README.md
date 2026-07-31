@@ -12,7 +12,7 @@ Writing and teaching assets derived from this repo.
 | Path | Role |
 |------|------|
 | `concepts/` | Temporal vocabulary + FBO messaging |
-| `drafts/` | Long-form blog posts |
+| `drafts/` | Long-form blog posts (01–05 ready) |
 | `tutorials/` | Step-by-step how-tos |
 | `decks/` | Slide decks and outlines |
 | `social/` | LinkedIn / X cuts |

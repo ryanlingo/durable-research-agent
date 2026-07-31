@@ -86,7 +86,7 @@ In the scripted Showcase demo (no API keys, forced mid-write crash), non-Tempora
 
 1. **Showcase UI** (fastest): run the dual crash animation, read the savings panel. No keys.  
 2. **Live crash** (real money/tokens): run both agents, kill and resume the non-Temporal path, restart the Temporal worker.  
-3. **Write-ups** in [`content/drafts/`](content/drafts/) (crash, HITL, evaluation, lab design).  
+3. **Write-ups** in [`content/drafts/`](content/drafts/) (crash, HITL, evaluation, lab design, parallel tools).  
 4. **Demo video**: [`content/assets/media/2026-07-31-showcase-crash-demo.mp4`](content/assets/media/2026-07-31-showcase-crash-demo.mp4).
 
 ```
@@ -214,7 +214,7 @@ requirements.txt        # Pip-friendly install list
 | Path | Contents |
 |------|----------|
 | `content/concepts/` | Temporal vocabulary, Feature → Benefit → Outcome |
-| `content/drafts/` | Long-form posts (01 crash, 02 HITL, 03 eval, 04 lab) |
+| `content/drafts/` | Long-form posts (01 crash, 02 HITL, 03 eval, 04 lab, 05 parallel tools) |
 | `content/tutorials/` | Step-by-step how-tos |
 | `content/decks/` | Slide decks and outlines |
 | `content/assets/diagrams/` | Infographics (SVG + PNG) |

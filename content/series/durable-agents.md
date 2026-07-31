@@ -15,7 +15,7 @@ Same agent. Two orchestration layers. One experiment.
 | 2 | Human-in-the-loop should not require a live process | Polling SQLite vs Temporal Signals | ready | `drafts/02-hitl-without-polling.md` |
 | 3 | Evaluation belongs inside the control flow | LLM-as-judge + refine as a real step | ready | `drafts/03-evaluation-in-the-loop.md` |
 | 4 | Building the side-by-side lab | Repo architecture + experiment UI | ready | `drafts/04-side-by-side-lab.md` |
-| 5 | Parallel tools, fair comparison | `asyncio.gather` vs concurrent Activities | idea | |
+| 5 | Parallel tools only count if both stacks pay the same concurrency tax | `asyncio.gather` vs concurrent Activities; crash mid-search | ready | `drafts/05-parallel-tools-fair-comparison.md` (+ social ready) |
 | 6 | Recording the proof | Loom script + shot list | ready (video in media/; narration optional) | `assets/loom-crash-demo.md` + `assets/media/2026-07-31-showcase-crash-demo.mp4` |
 
 Series line: I built the same multi-agent research system twice (asyncio + checkpoints vs Temporal), then killed both mid-run. The delta is the curriculum.
