@@ -26,6 +26,7 @@ ruff check shared without_temporal with_temporal ui tests
 ```
 
 GitHub Actions runs the same checks on push and PR to `main` (see `.github/workflows/ci.yml`).
+
 ## Layout
 
 | Area | Own it if you change… |

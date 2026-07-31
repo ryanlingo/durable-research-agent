@@ -16,7 +16,7 @@ Same agent. Two orchestration layers. One experiment.
 | 3 | Evaluation belongs inside the control flow | LLM-as-judge + refine as a real step | ready | `drafts/03-evaluation-in-the-loop.md` |
 | 4 | Building the side-by-side lab | Repo architecture + experiment UI | ready | `drafts/04-side-by-side-lab.md` |
 | 5 | Parallel tools, fair comparison | `asyncio.gather` vs concurrent Activities | idea | |
-| 6 | Recording the proof | Loom script + shot list | deferred | `assets/loom-crash-demo.md` |
+| 6 | Recording the proof | Loom script + shot list | ready (video in media/; narration optional) | `assets/loom-crash-demo.md` + `assets/media/2026-07-31-showcase-crash-demo.mp4` |
 
 Series line: I built the same multi-agent research system twice (asyncio + checkpoints vs Temporal), then killed both mid-run. The delta is the curriculum.
 
@@ -25,7 +25,8 @@ Series line: I built the same multi-agent research system twice (asyncio + check
 - Showcase mid-run + savings panel: `assets/media/2026-07-31-showcase-*.png` (P3.3)
 - Temporal Web UI: `assets/media/2026-07-31-temporal-web-ui.png`
 - Architecture: `assets/diagrams/02-shared-brain-two-runtimes.svg`
-- Loom: deferred (P3.2)
+- Demo video (automated Showcase capture): `assets/media/2026-07-31-showcase-crash-demo.mp4` (P3.2)
+- Loom shot list (optional narration): `assets/loom-crash-demo.md`
 
 ## Distribution per post
 

@@ -48,6 +48,10 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 include = ["shared*", "without_temporal*", "with_temporal*", "ui*"]
 
+# Ensure experiment UI assets ship with the package (not just .py modules).
+[tool.setuptools.package-data]
+ui = ["static/*"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
