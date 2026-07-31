@@ -10,6 +10,7 @@ import pytest
 from temporalio import activity
 from temporalio.testing import WorkflowEnvironment
 from temporalio.worker import Worker
+
 from with_temporal.workflows import ResearchWorkflow
 
 TOKENS = {"prompt_tokens": 10, "completion_tokens": 5, "total_tokens": 15}
