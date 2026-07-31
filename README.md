@@ -221,7 +221,7 @@ requirements.txt        # Pip-friendly install list
 | `content/decks/` | Crash-lab talk deck (`.pptx` + outline) |
 | `content/assets/diagrams/` | Infographics (SVG + PNG) |
 | `content/assets/media/` | Screenshots and demo video |
-| `content/social/` | Short-form distribution cuts |
+| `content/social/` | Short-form cuts (launch + posts 02–05 + gaps) |
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 title: Durable agents series
-status: outline
+status: ready
 audience: AI engineers building multi-step agents
 style: context/STYLE.md
 ---
@@ -33,3 +33,5 @@ Series line: I built the same multi-agent research system twice (asyncio + check
 ## Distribution per post
 
 Long-form draft here, then Substack/personal/Temporal blog; one LinkedIn cut; one short thread. Style stays `context/STYLE.md` in every channel.
+
+Paste-ready social: [`../social/README.md`](../social/README.md) (launch + posts 02–05 + recovery gaps).

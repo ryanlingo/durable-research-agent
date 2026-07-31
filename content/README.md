@@ -15,7 +15,7 @@ Writing and teaching assets derived from this repo.
 | `drafts/` | Long-form blog posts (01–05 ready) |
 | `tutorials/` | How-tos 01–04 (Showcase, CLI crashes, Temporal Worker, Live mode) |
 | `decks/` | Slide decks and outlines (crash-lab outline ready) |
-| `social/` | LinkedIn / X cuts |
+| `social/` | LinkedIn / X cuts (launch + posts 02–05 + recovery gaps) |
 | `series/` | Multi-post arcs and calendar |
 | `notes/` | Day-of observations from demos |
 | `assets/diagrams/` | Infographics (SVG + PNG) |
