@@ -4,7 +4,7 @@ A side-by-side lab: the **same** multi-step research agent on a typical producti
 
 ---
 
-## What this project is (explain like you’re 15)
+## What this project is
 
 ### The short version
 
