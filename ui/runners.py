@@ -156,8 +156,12 @@ async def run_with_temporal(
             )
             return
 
+    from ui.temporal_stream import execution_status_event, history_item_to_event
+
     last_status = ""
     last_history_len = 0
+    last_exec_status = ""
+    noted_wait = False
     try:
         while True:
             try:
@@ -168,7 +172,10 @@ async def run_with_temporal(
                         "side": "with",
                         "type": "error",
                         "run_id": wid,
-                        "message": f"Status query failed: {exc}",
+                        "message": (
+                            f"Status Query failed (Worker may be down; "
+                            f"Workflow Execution can continue): {exc}"
+                        ),
                     }
                 )
                 await asyncio.sleep(1.0)
@@ -178,17 +185,15 @@ async def run_with_temporal(
             tokens = st.get("total_tokens") or session.with_temporal.tokens
             history = st.get("history") or []
 
+            # Stream new application-level history entries (Activity boundaries).
             if len(history) > last_history_len:
                 for item in history[last_history_len:]:
                     await session.publish(
-                        {
-                            "side": "with",
-                            "type": "checkpoint",
-                            "run_id": wid,
-                            "status": item.get("status", status),
-                            "tokens": item.get("tokens") or tokens,
-                            "message": item.get("message") or item.get("status"),
-                        }
+                        history_item_to_event(
+                            item,
+                            run_id=wid,
+                            fallback_tokens=tokens,
+                        )
                     )
                 last_history_len = len(history)
             elif status != last_status:
@@ -199,15 +204,61 @@ async def run_with_temporal(
                         "run_id": wid,
                         "status": status,
                         "tokens": tokens,
+                        "kind": "status",
                         "message": f"Status → {status}",
                     }
                 )
             last_status = status
 
-            desc = await handle.describe()
-            if desc.status.name in ("COMPLETED", "FAILED", "CANCELED", "TERMINATED", "TIMED_OUT"):
-                if desc.status.name == "COMPLETED":
+            # One-shot durable wait note so Live mode teaches Signal waits.
+            if st.get("waiting_for_approval") and not noted_wait:
+                noted_wait = True
+                await session.publish(
+                    {
+                        "side": "with",
+                        "type": "awaiting_approval",
+                        "run_id": wid,
+                        "status": "awaiting_approval",
+                        "tokens": tokens,
+                        "kind": "wait",
+                        "label": "wait",
+                        "message": (
+                            "Awaiting approval Signal · Workflow Execution retained "
+                            "in Event History (no live poller)"
+                        ),
+                    }
+                )
+
+            try:
+                desc = await handle.describe()
+                exec_name = desc.status.name
+            except Exception:  # noqa: BLE001
+                exec_name = last_exec_status or "RUNNING"
+
+            if exec_name and exec_name != last_exec_status:
+                await session.publish(
+                    execution_status_event(
+                        run_id=wid,
+                        execution_status=exec_name,
+                        tokens=tokens if isinstance(tokens, dict) else None,
+                    )
+                )
+                last_exec_status = exec_name
+
+            if exec_name in ("COMPLETED", "FAILED", "CANCELED", "TERMINATED", "TIMED_OUT"):
+                if exec_name == "COMPLETED":
                     result = await handle.result()
+                    hist = result.get("history") or []
+                    # Flush any terminal history not yet streamed via query race.
+                    if len(hist) > last_history_len:
+                        for item in hist[last_history_len:]:
+                            await session.publish(
+                                history_item_to_event(
+                                    item,
+                                    run_id=wid,
+                                    fallback_tokens=result.get("total_tokens") or tokens,
+                                )
+                            )
                     await session.publish(
                         {
                             "side": "with",
@@ -217,9 +268,11 @@ async def run_with_temporal(
                             "tokens": result.get("total_tokens") or tokens,
                             "evaluation": result.get("evaluation"),
                             "report": result.get("markdown_report"),
+                            "kind": "terminal",
                             "message": (
-                                f"Workflow completed · "
-                                f"{(result.get('total_tokens') or {}).get('total_tokens', 0)} tokens"
+                                f"Workflow Execution completed · "
+                                f"{(result.get('total_tokens') or {}).get('total_tokens', 0)} tokens · "
+                                f"completed Activities were not re-run"
                             ),
                         }
                     )
@@ -229,14 +282,14 @@ async def run_with_temporal(
                             "side": "with",
                             "type": "error",
                             "run_id": wid,
-                            "status": desc.status.name.lower(),
+                            "status": exec_name.lower(),
                             "tokens": tokens,
-                            "message": f"Workflow ended: {desc.status.name}",
+                            "message": f"Workflow Execution ended: {exec_name}",
                         }
                     )
                 break
 
-            await asyncio.sleep(0.6)
+            await asyncio.sleep(0.45)
     except asyncio.CancelledError:
         await session.publish(
             {
@@ -247,7 +300,8 @@ async def run_with_temporal(
                 "tokens": session.with_temporal.tokens,
                 "message": (
                     "UI watcher cancelled. If the Worker was killed, restart it. "
-                    "The Workflow Execution continues; completed Activities are not re-run on history replay."
+                    "The Workflow Execution continues; completed Activities are not "
+                    "re-run on Event History replay."
                 ),
             }
         )

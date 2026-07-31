@@ -602,7 +602,9 @@ select:focus {
 
 .event.completed,
 .event.recovered,
-.event.re_executed {
+.event.re_executed,
+.event.activity,
+.event.signal {
   border-color: var(--ink);
   color: var(--ink);
   background: var(--fill);
@@ -610,6 +612,23 @@ select:focus {
 
 .event.re_executed {
   border-style: dashed;
+}
+
+.event.activity {
+  border-style: solid;
+}
+
+.event.signal,
+.event.awaiting_approval,
+.event.kind-wait {
+  border-style: dashed;
+}
+
+.event.execution,
+.event.kind-execution {
+  border-color: var(--ink);
+  color: var(--muted);
+  font-size: 0.64rem;
 }
 
 .event.checkpoint,

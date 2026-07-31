@@ -32,6 +32,13 @@ const STAGE_ALIASES = {
   rejected: "completed",
   crashed: null,
   error: null,
+  // Temporal Workflow Execution status names (from describe())
+  running: null,
+  failed: null,
+  canceled: null,
+  cancelled: null,
+  terminated: null,
+  timed_out: null,
 };
 
 const state = {
@@ -183,13 +190,26 @@ function formatTokens(n) {
   return Number(n || 0).toLocaleString();
 }
 
+function eventLabel(event) {
+  if (event.label) return event.label;
+  if (event.kind === "activity_start" || event.kind === "activity_complete") {
+    return "activity";
+  }
+  if (event.kind === "signal") return "signal";
+  if (event.kind === "wait") return "wait";
+  if (event.kind === "execution" || event.type === "execution") return "execution";
+  return event.type || "event";
+}
+
 function appendEvent(side, event) {
   const box = $(side === "without" ? "eventsWithout" : "eventsWith");
   const div = document.createElement("div");
   const type = event.type || "event";
-  div.className = `event ${type}`;
+  const kind = event.kind || "";
+  div.className = `event ${type}${kind ? ` kind-${kind}` : ""}`;
   const msg = event.message || JSON.stringify(event);
-  div.innerHTML = `<span class="etype">[${type}]</span>${escapeHtml(msg)}`;
+  const label = eventLabel(event);
+  div.innerHTML = `<span class="etype">[${label}]</span>${escapeHtml(msg)}`;
   box.appendChild(div);
   box.scrollTop = box.scrollHeight;
 }

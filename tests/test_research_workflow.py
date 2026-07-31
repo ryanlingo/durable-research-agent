@@ -103,6 +103,16 @@ async def test_workflow_auto_approve_completes() -> None:
     assert result["evaluation"]["overall"] == 0.95
     assert result["total_tokens"]["total_tokens"] > 0
     assert result["refinements"] == 0
+    # Richer application history for Live UI
+    hist = result.get("history") or []
+    assert hist
+    kinds = {h.get("kind") for h in hist}
+    assert "activity_start" in kinds
+    assert "activity_complete" in kinds
+    activities = {h.get("activity") for h in hist if h.get("activity")}
+    assert "write_activity" in activities
+    assert "evaluate_activity" in activities
+    assert any(h.get("token_delta", 0) > 0 for h in hist)
 
 
 @pytest.mark.asyncio
@@ -136,6 +146,16 @@ async def test_workflow_status_query_and_approval_signal() -> None:
             assert st["waiting_for_approval"] is True
             assert st["total_tokens"]["total_tokens"] > 0
             assert st["search_plan"] == ["q1", "q2"]
+            assert st.get("last_activity") in (
+                "evaluate_activity",
+                "write_activity",
+                "search_activity",
+                "plan_activity",
+                "clarify_activity",
+                "retrieve_activity",
+            )
+            hist = st.get("history") or []
+            assert any(h.get("kind") == "wait" for h in hist)
 
             await handle.signal(ResearchWorkflow.submit_approval, "approved")
             result = await handle.result()
