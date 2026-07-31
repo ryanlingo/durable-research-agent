@@ -26,7 +26,7 @@ from ui.runners import (
     resume_without,
     start_live_session,
 )
-from ui.showcase import STAGES, run_showcase
+from ui.showcase import CRASHABLE_STAGES, STAGES, normalize_crash_at, run_showcase
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
 
@@ -47,7 +47,10 @@ class StartRequest(BaseModel):
     mode: str = Field(default="showcase", pattern="^(showcase|live)$")
     auto_approve: bool = True
     pace: float = Field(default=1.0, ge=0.15, le=3.0)
-    crash_at: str = "writing"
+    crash_at: str = Field(
+        default="writing",
+        description="Showcase stage to crash mid-step (ignored in live mode)",
+    )
     sides: str = Field(default="both", pattern="^(both|without|with)$")
 
 
@@ -67,6 +70,8 @@ async def index() -> FileResponse:
 async def meta() -> dict[str, Any]:
     return {
         "stages": STAGES,
+        "crashable_stages": CRASHABLE_STAGES,
+        "default_crash_at": "writing",
         "modes": ["showcase", "live"],
         "default_query": (
             "How does durable execution help AI agents survive process crashes?"
@@ -76,6 +81,7 @@ async def meta() -> dict[str, Any]:
 
 @app.post("/api/sessions")
 async def create_session(body: StartRequest) -> dict[str, Any]:
+    crash_at = normalize_crash_at(body.crash_at)
     session = store.create(
         query=body.query.strip() or body.query,
         mode=body.mode,
@@ -85,13 +91,17 @@ async def create_session(body: StartRequest) -> dict[str, Any]:
         {
             "side": "system",
             "type": "session_created",
-            "message": f"Session {session.session_id} · mode={body.mode}",
+            "crash_at": crash_at if body.mode == "showcase" else None,
+            "message": (
+                f"Session {session.session_id} · mode={body.mode}"
+                + (f" · crash_at={crash_at}" if body.mode == "showcase" else "")
+            ),
         }
     )
 
     if body.mode == "showcase":
         task = asyncio.create_task(
-            run_showcase(session, crash_at=body.crash_at, pace=body.pace)
+            run_showcase(session, crash_at=crash_at, pace=body.pace)
         )
         session.tasks["showcase"] = task
     else:

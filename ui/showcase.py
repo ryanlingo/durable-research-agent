@@ -22,6 +22,29 @@ STAGES = [
     "completed",
 ]
 
+# Stages where Showcase can force a mid-step crash (selectable in the UI).
+# Exclude approval/completed — little in-flight LLM work to lose.
+CRASHABLE_STAGES = [
+    "clarifying",
+    "planning",
+    "retrieving",
+    "searching",
+    "writing",
+    "evaluating",
+]
+
+# Terminal checkpoint name after a stage finishes successfully
+STAGE_DONE = {
+    "clarifying": "clarified",
+    "planning": "planned",
+    "retrieving": "retrieved",
+    "searching": "searched",
+    "writing": "drafted",
+    "evaluating": "evaluated",
+    "awaiting_approval": "awaiting_approval",
+    "completed": "completed",
+}
+
 # Token costs per stage (illustrative but consistent)
 WITHOUT_COSTS = {
     "clarifying": 420,
@@ -44,6 +67,35 @@ WITH_COSTS = {
     "awaiting_approval": 0,
     "completed": 0,
 }
+
+
+def normalize_crash_at(crash_at: str | None) -> str:
+    """Return a valid crash stage; default writing."""
+    if crash_at in CRASHABLE_STAGES:
+        return crash_at  # type: ignore[return-value]
+    return "writing"
+
+
+def _crash_work_message(stage: str) -> str:
+    return {
+        "clarifying": "Deciding whether clarification is needed…",
+        "planning": "Producing search queries…",
+        "retrieving": "Embedding query + retrieving chunks…",
+        "searching": "Parallel web searches in flight…",
+        "writing": "Writing draft report…",
+        "evaluating": "LLM-as-judge scoring draft…",
+    }.get(stage, f"Working on {stage}…")
+
+
+def _rerun_reason(stage: str) -> str:
+    return {
+        "clarifying": "clarification result lost mid-call",
+        "planning": "search plan not checkpointed before crash",
+        "retrieving": "retrieval result missing after crash",
+        "searching": "gather results only land after full completion",
+        "writing": "draft missing; in-flight write was not checkpointed",
+        "evaluating": "judge result lost; evaluation not checkpointed",
+    }.get(stage, f"{stage} result missing after crash")
 
 
 def _tokens(total: int) -> dict[str, int]:
@@ -77,8 +129,9 @@ async def run_showcase(
     """Animate a dual-run crash experiment.
 
     pace: multiply all delays (1.0 = default talk tempo).
-    crash_at: stage name where both sides are "killed".
+    crash_at: stage name where both sides are "killed" (see CRASHABLE_STAGES).
     """
+    crash_at = normalize_crash_at(crash_at)
     query = session.query
     without_run = f"local-{session.session_id}"
     with_run = f"research-{session.session_id}"
@@ -87,7 +140,11 @@ async def run_showcase(
         {
             "side": "system",
             "type": "showcase_started",
-            "message": "Showcase mode — scripted crash recovery (no API keys required)",
+            "crash_at": crash_at,
+            "message": (
+                f"Showcase mode — scripted crash at '{crash_at}' "
+                "(no API keys required)"
+            ),
         }
     )
 
@@ -131,11 +188,7 @@ async def run_showcase(
                         "run_id": run_id,
                         "status": stage,
                         "tokens": _tokens(total),
-                        "message": (
-                            "Writing draft report…"
-                            if stage == "writing"
-                            else f"Working on {stage}…"
-                        ),
+                        "message": _crash_work_message(stage),
                     }
                 )
                 await _sleep(session, 1.1 * pace)
@@ -166,14 +219,17 @@ async def run_showcase(
                         "run_id": run_id,
                         "status": "crashed",
                         "tokens": _tokens(total),
+                        "crash_at": stage,
                         "message": (
-                            "Process killed mid-pipeline; in-flight result lost"
+                            f"Process killed mid-{stage}; in-flight result lost"
                             if not durable
-                            else "Worker killed; Event History retained"
+                            else f"Worker killed mid-{stage}; Event History retained"
                         ),
                     }
                 )
                 await _sleep(session, 1.2 * pace)
+
+                done_status = STAGE_DONE.get(stage, stage)
 
                 if durable:
                     await session.publish(
@@ -193,13 +249,13 @@ async def run_showcase(
                     await _sleep(session, 0.7 * pace)
                     cost = costs.get(stage, 0)
                     total += cost
-                    completed_before_crash.append(stage)
+                    completed_before_crash.append(done_status)
                     await session.publish(
                         {
                             "side": side,
                             "type": "checkpoint",
                             "run_id": run_id,
-                            "status": "drafted" if stage == "writing" else stage,
+                            "status": done_status,
                             "tokens": _tokens(total),
                             "message": (
                                 f"Activity completed after resume · +{cost} tokens "
@@ -208,7 +264,11 @@ async def run_showcase(
                         }
                     )
                 else:
-                    last_good = completed_before_crash[-1] if completed_before_crash else "started"
+                    last_good = (
+                        completed_before_crash[-1]
+                        if completed_before_crash
+                        else "started"
+                    )
                     without_tokens_at_resume = total
                     await session.publish(
                         {
@@ -221,44 +281,55 @@ async def run_showcase(
                             "draft_present": False,
                             "message": (
                                 f"Partial recovery from SQLite at '{last_good}'. "
-                                f"Draft missing · recovery logic re-runs paid work."
+                                f"In-flight '{stage}' result missing · "
+                                f"recovery logic re-runs paid work."
                             ),
                         }
                     )
                     await _sleep(session, 0.55 * pace)
 
-                    # Incomplete recovery often re-touches earlier steps
-                    replan_cost = costs["planning"]
-                    total += replan_cost
-                    entry = {
-                        "step": "planning",
-                        "tokens": replan_cost,
-                        "reason": "recovery edge case re-plans after crash",
-                    }
-                    re_executed.append(entry)
-                    await session.publish(
-                        {
-                            "side": side,
-                            "type": "re_executed",
-                            "run_id": run_id,
-                            "status": "planning",
-                            "tokens": _tokens(total),
-                            "re_executed_step": entry,
-                            "re_executed": list(re_executed),
-                            "message": (
-                                f"Re-planning after crash (recovery edge case) · "
-                                f"+{replan_cost} tokens wasted"
-                            ),
-                        }
+                    # Incomplete recovery edge case: re-touch planning when a
+                    # plan already completed before the crash (not when the
+                    # crash itself is mid-plan / mid-clarify).
+                    plan_already_done = last_good in (
+                        "planned",
+                        "retrieved",
+                        "searched",
+                        "drafted",
+                        "evaluated",
                     )
-                    await _sleep(session, 0.55 * pace)
+                    if plan_already_done and stage != "planning":
+                        replan_cost = costs["planning"]
+                        total += replan_cost
+                        entry = {
+                            "step": "planning",
+                            "tokens": replan_cost,
+                            "reason": "recovery edge case re-plans after crash",
+                        }
+                        re_executed.append(entry)
+                        await session.publish(
+                            {
+                                "side": side,
+                                "type": "re_executed",
+                                "run_id": run_id,
+                                "status": "planning",
+                                "tokens": _tokens(total),
+                                "re_executed_step": entry,
+                                "re_executed": list(re_executed),
+                                "message": (
+                                    f"Re-planning after crash (recovery edge case) · "
+                                    f"+{replan_cost} tokens wasted"
+                                ),
+                            }
+                        )
+                        await _sleep(session, 0.55 * pace)
 
-                    rewrite_cost = costs.get(stage, 0)
-                    total += rewrite_cost
+                    rerun_cost = costs.get(stage, 0)
+                    total += rerun_cost
                     entry = {
                         "step": stage,
-                        "tokens": rewrite_cost,
-                        "reason": "draft missing; in-flight write was not checkpointed",
+                        "tokens": rerun_cost,
+                        "reason": _rerun_reason(stage),
                     }
                     re_executed.append(entry)
                     await session.publish(
@@ -272,7 +343,7 @@ async def run_showcase(
                             "re_executed": list(re_executed),
                             "message": (
                                 f"Re-running {stage} from scratch · "
-                                f"+{rewrite_cost} tokens "
+                                f"+{rerun_cost} tokens "
                                 f"(prior partial bill also wasted)"
                             ),
                         }
@@ -283,13 +354,13 @@ async def run_showcase(
                             "side": side,
                             "type": "checkpoint",
                             "run_id": run_id,
-                            "status": "drafted" if stage == "writing" else stage,
+                            "status": done_status,
                             "tokens": _tokens(total),
                             "re_executed": list(re_executed),
-                            "message": f"Checkpointed again at '{stage}'",
+                            "message": f"Checkpointed again at '{done_status}'",
                         }
                     )
-                    completed_before_crash.append(stage)
+                    completed_before_crash.append(done_status)
                     if side == "without":
                         without_re_executed.clear()
                         without_re_executed.extend(re_executed)
@@ -309,16 +380,7 @@ async def run_showcase(
             await _sleep(session, _stage_delay(stage) * pace)
             cost = costs.get(stage, 0)
             total += cost
-            status_name = {
-                "clarifying": "clarified",
-                "planning": "planned",
-                "retrieving": "retrieved",
-                "searching": "searched",
-                "writing": "drafted",
-                "evaluating": "evaluated",
-                "awaiting_approval": "awaiting_approval",
-                "completed": "completed",
-            }.get(stage, stage)
+            status_name = STAGE_DONE.get(stage, stage)
 
             if stage == "awaiting_approval":
                 await session.publish(

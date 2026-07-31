@@ -61,14 +61,18 @@ function initPipelines() {
 function setModeHint() {
   const mode = $("mode").value;
   const live = $("liveControls");
+  const crashField = $("crashAtField");
+  const crashAt = $("crashAt") ? $("crashAt").value : "writing";
   if (mode === "live") {
     live.classList.remove("hidden");
+    if (crashField) crashField.classList.add("hidden");
     $("modeHint").textContent =
       "Live: real agents. Needs Temporal server + worker. Crash/Resume acts on the non-Temporal side.";
   } else {
     live.classList.add("hidden");
+    if (crashField) crashField.classList.remove("hidden");
     $("modeHint").textContent =
-      "Showcase: scripted mid-write crash. No API keys or Temporal server.";
+      `Showcase: scripted crash mid-${crashAt}. No API keys or Temporal server.`;
   }
 }
 
@@ -406,7 +410,7 @@ async function startSession() {
     mode: $("mode").value,
     auto_approve: $("autoApprove").checked,
     pace: Number($("pace").value),
-    crash_at: "writing",
+    crash_at: $("crashAt") ? $("crashAt").value : "writing",
     sides: "both",
   };
 
@@ -488,6 +492,9 @@ function wire() {
   initPipelines();
   setModeHint();
   $("mode").addEventListener("change", setModeHint);
+  if ($("crashAt")) {
+    $("crashAt").addEventListener("change", setModeHint);
+  }
   $("btnStart").addEventListener("click", () => startSession());
   $("btnStop").addEventListener("click", () => stopSession(true));
   $("btnCrash").addEventListener("click", () => postAction("/crash/without"));
