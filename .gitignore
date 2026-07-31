@@ -1,0 +1,38 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Local secrets and machine state
+.env
+.env.local
+*.db
+without_temporal/checkpoints.db
+.DS_Store
+Thumbs.db
+
+# Editors / IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Local-only project context (plans, style, private notes)
+context/
+
+# Optional large media (keep links in content/assets/media/LINKS.md instead)
+# content/assets/media/**/*.mp4
+# content/assets/media/**/*.mov

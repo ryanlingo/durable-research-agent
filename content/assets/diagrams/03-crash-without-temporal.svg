@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="400" viewBox="0 0 1000 400" role="img">
+  <rect width="1000" height="400" fill="#FAFAFA"/>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#1A1A1A"/>
+    </marker>
+    <style>
+    .label { font-family: Inter, Helvetica, Arial, sans-serif; font-size: 17px; fill: #1A1A1A; }
+    .title { font-family: Inter, Helvetica, Arial, sans-serif; font-size: 15px; fill: #555555; }
+    .box { fill: #FFFFFF; stroke: #1A1A1A; stroke-width: 1.75; }
+    .box-fill { fill: #E8E8E8; stroke: #1A1A1A; stroke-width: 1.75; }
+    .line { stroke: #1A1A1A; stroke-width: 1.75; fill: none; }
+</style>
+  </defs>
+
+  <text x="500" y="36" text-anchor="middle" class="title">Without Temporal · process crash mid-write</text>
+  <rect x="40" y="80" width="120" height="48" rx="16" class="box"/>
+  <text x="100.0" y="110.0" text-anchor="middle" class="label">Clarify</text>
+  <rect x="190" y="80" width="120" height="48" rx="16" class="box"/>
+  <text x="250.0" y="110.0" text-anchor="middle" class="label">Plan</text>
+  <rect x="340" y="80" width="120" height="48" rx="16" class="box"/>
+  <text x="400.0" y="110.0" text-anchor="middle" class="label">Search</text>
+  <rect x="490" y="80" width="130" height="48" rx="16" fill="#FFFFFF" stroke="#1A1A1A" stroke-width="1.75" stroke-dasharray="4 4"/>
+  <text x="555.0" y="110.0" text-anchor="middle" class="label">Write</text>
+  <rect x="650" y="80" width="120" height="48" rx="16" class="box"/>
+  <text x="710.0" y="110.0" text-anchor="middle" class="label">Eval</text>
+  <rect x="800" y="80" width="140" height="48" rx="16" class="box"/>
+  <text x="870.0" y="110.0" text-anchor="middle" class="label">Approve</text>
+  <line x1="160" y1="104" x2="182" y2="104" class="line" marker-end="url(#arrow)"/>
+  <line x1="310" y1="104" x2="332" y2="104" class="line" marker-end="url(#arrow)"/>
+  <line x1="460" y1="104" x2="482" y2="104" class="line" marker-end="url(#arrow)"/>
+  <line x1="620" y1="104" x2="642" y2="104" class="line" marker-end="url(#arrow)"/>
+  <line x1="770" y1="104" x2="792" y2="104" class="line" marker-end="url(#arrow)"/>
+  <line x1="555" y1="58" x2="555" y2="145" stroke="#1A1A1A" stroke-width="1.5"/>
+  <text x="555" y="52" text-anchor="middle" class="title">crash</text>
+  <text x="500" y="195" text-anchor="middle" class="label">After restart</text>
+  <rect x="120" y="230" width="200" height="52" rx="16" class="box"/>
+  <text x="220.0" y="262.0" text-anchor="middle" class="label">Partial checkpoint</text>
+  <line x1="320" y1="256" x2="380" y2="256" class="line" marker-end="url(#arrow)"/>
+  <rect x="390" y="230" width="220" height="52" rx="16" class="box-fill"/>
+  <text x="500.0" y="262.0" text-anchor="middle" class="label">Re-run paid steps</text>
+  <line x1="610" y1="256" x2="670" y2="256" class="line" marker-end="url(#arrow)"/>
+  <rect x="680" y="230" width="200" height="52" rx="16" class="box"/>
+  <text x="780.0" y="262.0" text-anchor="middle" class="label">Higher token bill</text>
+  <text x="500" y="350" text-anchor="middle" class="title">In-flight draft lost · recovery is application code</text>
+</svg>

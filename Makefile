@@ -1,0 +1,41 @@
+.PHONY: help install install-dev ui worker run-without run-with demo-server test lint
+
+help:
+	@echo "Targets:"
+	@echo "  install       Install runtime dependencies"
+	@echo "  install-dev   Install runtime + dev dependencies"
+	@echo "  ui            Start experiment UI on :8765"
+	@echo "  worker        Start Temporal Worker"
+	@echo "  run-without   Non-Temporal auto-approve run"
+	@echo "  run-with      Temporal auto-approve run (needs server + worker)"
+	@echo "  demo-server   Print Temporal dev server command"
+	@echo "  test          Run pytest"
+	@echo "  lint          Run ruff"
+
+install:
+	pip install -r requirements.txt
+
+install-dev:
+	pip install -r requirements.txt
+	pip install -e ".[dev]"
+
+ui:
+	python -m ui.app
+
+worker:
+	python -m with_temporal.worker
+
+run-without:
+	python -m without_temporal.run "How does durable execution help AI agents?" --auto-approve
+
+run-with:
+	python -m with_temporal.run "How does durable execution help AI agents?" --auto-approve --wait
+
+demo-server:
+	@echo "temporal server start-dev"
+
+test:
+	pytest
+
+lint:
+	ruff check .
