@@ -1,12 +1,15 @@
 ---
 title: Crash demo recording script
-status: ready
+status: done
 series: durable-agents
 item: P3.2
-duration: 90-120s
+duration: ~24s automated (or 90-120s with your voiceover)
+video: content/assets/media/2026-07-31-showcase-crash-demo.mp4
 ---
 
-# P3.2 only: record the crash demo
+# P3.2: crash demo recording
+
+Automated capture is at `content/assets/media/2026-07-31-showcase-crash-demo.mp4` (no voiceover). Use this script if you re-record with narration in Loom.
 
 **Feature:** Showcase UI runs both stacks through a mid-write crash.  
 **Benefit:** Viewer sees lost work, re-paid tokens, and resume without reading code.  
