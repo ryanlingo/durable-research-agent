@@ -11,7 +11,7 @@ Writing and teaching assets derived from this repo.
 
 | Path | Role |
 |------|------|
-| `concepts/` | Temporal vocabulary + FBO messaging |
+| `concepts/` | Temporal vocabulary, FBO messaging, recovery-gap catalog |
 | `drafts/` | Long-form blog posts (01–05 ready) |
 | `tutorials/` | Step-by-step how-tos |
 | `decks/` | Slide decks and outlines |

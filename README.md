@@ -213,7 +213,7 @@ requirements.txt        # Pip-friendly install list
 
 | Path | Contents |
 |------|----------|
-| `content/concepts/` | Temporal vocabulary, Feature → Benefit → Outcome |
+| `content/concepts/` | Temporal vocabulary, FBO, intentional recovery gaps |
 | `content/drafts/` | Long-form posts (01 crash, 02 HITL, 03 eval, 04 lab, 05 parallel tools) |
 | `content/tutorials/` | Step-by-step how-tos |
 | `content/decks/` | Slide decks and outlines |

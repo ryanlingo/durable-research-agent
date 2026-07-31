@@ -6,6 +6,29 @@ Realistic "typical production" shape:
 - SQLite checkpoints after every major step
 - Human approval via polling a database row
 - Manual recovery logic that is incomplete on purpose
+
+Intentional recovery gaps (keep fair; do not "fix" these away):
+see content/concepts/recovery-gaps.md for the full teaching list.
+
+1. In-flight write: draft is only checkpointed after the LLM returns
+   (`drafted`). Kill mid-write → tokens may already be billed; resume
+   rewrites from scratch.
+2. Parallel search gather: results checkpoint only after the full
+   `asyncio.gather`. Mid-gather death → re-run the whole plan.
+3. Status-gated resume: stages re-run based on coarse `status` strings,
+   not per-field versioning or Event History.
+4. Re-evaluate on resume: if an evaluation was saved but recovery still
+   enters the write/eval loop (e.g. status awaiting_approval), the judge
+   runs again. Incomplete short-circuit on purpose.
+5. Nested object reconstruction: recovery rehydrates SearchResult /
+   RetrievedChunk / EvaluationResult by hand. Missing fields fail quiet
+   or force later re-work.
+6. Token totals in SQLite lag provider bills for any call that died before
+   checkpoint. The `re_executed` ledger records re-pays after resume;
+   it does not invent the lost in-flight bill.
+
+These gaps are the curriculum for the Temporal comparison, not unfinished
+todos. Closing them all would re-implement a workflow engine beside the agent.
 """
 
 from __future__ import annotations
@@ -169,7 +192,7 @@ async def run_research(
             },
         )
 
-    # Attempt recovery from checkpoint
+    # Attempt recovery from checkpoint (gap #3, #5: status string + manual hydrate).
     raw = load_state(run_id)
     if raw:
         is_recovery = True
@@ -178,8 +201,8 @@ async def run_research(
         state.status = raw.get("status", "started")
         state.clarified_query = raw.get("clarified_query")
         state.search_plan = raw.get("search_plan", [])
-        # Reconstruct nested objects. This boilerplate is the kind of work
-        # every non-durable agent accumulates for crash recovery.
+        # Gap #5: reconstruct nested objects by hand. This boilerplate is the
+        # kind of work every non-durable agent accumulates for crash recovery.
         from shared.types import EvaluationResult, RetrievedChunk, SearchResult
 
         state.search_results = [
@@ -338,19 +361,17 @@ async def run_research(
         search_coros = [_search_one(q) for q in state.search_plan]
         results = await asyncio.gather(*search_coros)
         state.search_results = list(results)
-        # Intentionally do not add search token usage into total here in a
-        # durable way if process dies mid-gather — intermediate gather results
-        # only land after all complete (partial recovery pain point).
+        # Gap #2: checkpoint only after the full gather. Mid-gather death loses
+        # partial results; resume re-issues every query in the plan.
         await checkpoint("searched", f"Searched {len(results)} queries")
 
     # 4. Write + evaluate + refine
-    # Incomplete recovery (intentional): even if evaluation was checkpointed,
-    # we re-enter the write/eval loop when draft is missing or status is still
-    # mid-pipeline — and we re-evaluate when draft exists without short-circuiting
-    # on a saved evaluation. That re-pays judge tokens after some crashes.
+    # Gaps #1 and #4: draft only after LLM returns; eval may re-run on resume
+    # even when a prior evaluation row was loaded from SQLite.
     refinements = 0
     while True:
         if state.draft_report is None or refinements > 0:
+            # Gap #1: missing draft after crash → full rewrite (re-paid tokens).
             rewriting_after_crash = (
                 is_recovery and refinements == 0 and not draft_present_at_resume
             )
@@ -382,6 +403,7 @@ async def run_research(
                 )
             await checkpoint("drafted")
 
+        # Gap #4: do not skip the judge solely because evaluation was hydrated.
         reevaluating = is_recovery and had_evaluation_at_resume and refinements == 0
         await _emit(
             on_event,

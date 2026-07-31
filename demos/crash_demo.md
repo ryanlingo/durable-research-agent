@@ -27,6 +27,10 @@ Observe:
 - Whether LLM / search calls are re-executed (token waste)
 - How complete the recovery logic actually is
 
+Intentional gaps (mid-write, mid-gather, re-eval, coarse status) are catalogued in
+[`content/concepts/recovery-gaps.md`](../content/concepts/recovery-gaps.md).
+Do not “fix” them without updating that doc; they are the comparison curriculum.
+
 ## With Temporal
 
 ```bash
