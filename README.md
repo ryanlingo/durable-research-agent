@@ -218,7 +218,7 @@ requirements.txt        # Pip-friendly install list
 | `content/concepts/` | Temporal vocabulary, FBO, intentional recovery gaps |
 | `content/drafts/` | Long-form posts (01 crash, 02 HITL, 03 eval, 04 lab, 05 parallel tools) |
 | `content/tutorials/` | Step-by-step how-tos (Showcase, CLI crash, Temporal Worker) |
-| `content/decks/` | Slide decks and outlines |
+| `content/decks/` | Talk deck outline (crash lab) + room for pptx |
 | `content/assets/diagrams/` | Infographics (SVG + PNG) |
 | `content/assets/media/` | Screenshots and demo video |
 | `content/social/` | Short-form distribution cuts |
