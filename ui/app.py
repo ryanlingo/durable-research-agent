@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.responses import FileResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -29,6 +29,8 @@ from ui.runners import (
 from ui.showcase import CRASHABLE_STAGES, STAGES, normalize_crash_at, run_showcase
 
 STATIC_DIR = Path(__file__).resolve().parent / "static"
+REPO_ROOT = Path(__file__).resolve().parent.parent
+MEDIA_DIR = REPO_ROOT / "content" / "assets" / "media"
 
 app = FastAPI(
     title="Durable Research Agent — Experiment UI",
@@ -66,6 +68,15 @@ async def index() -> FileResponse:
     return FileResponse(index_path)
 
 
+@app.get("/video")
+@app.get("/demo")
+async def demo_video_redirect() -> RedirectResponse:
+    """Captioned Showcase crash demo (watch.html + mp4 + vtt under /demo/)."""
+    if not (MEDIA_DIR / "watch.html").exists():
+        raise HTTPException(404, "Demo player not found under content/assets/media/")
+    return RedirectResponse(url="/demo/watch.html", status_code=307)
+
+
 @app.get("/api/meta")
 async def meta() -> dict[str, Any]:
     return {
@@ -73,6 +84,7 @@ async def meta() -> dict[str, Any]:
         "crashable_stages": CRASHABLE_STAGES,
         "default_crash_at": "writing",
         "modes": ["showcase", "live"],
+        "demo_video_url": "/demo/watch.html",
         "default_query": (
             "How does durable execution help AI agents survive process crashes?"
         ),
@@ -201,6 +213,16 @@ async def api_stop(session_id: str) -> dict[str, Any]:
 
 def _sse(data: dict[str, Any]) -> str:
     return f"data: {json.dumps(data, default=str)}\n\n"
+
+
+# Captioned demo assets: /demo/watch.html, /demo/*.mp4, /demo/*.vtt
+# Registered after /demo redirect so exact /demo still redirects to watch.html.
+if MEDIA_DIR.is_dir():
+    app.mount(
+        "/demo",
+        StaticFiles(directory=str(MEDIA_DIR), html=True),
+        name="demo",
+    )
 
 
 def main() -> None:

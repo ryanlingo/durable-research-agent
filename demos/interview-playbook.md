@@ -24,9 +24,9 @@ python -m ui.app          # http://127.0.0.1:8765
 Optional: open the deck  
 `content/decks/2026-07-31-durable-agents-crash-lab.pptx`
 
-Optional: queue the silent video (captions available)  
-`content/assets/media/2026-07-31-showcase-crash-demo.mp4`  
-Captioned player: `content/assets/media/watch.html` (serve with `python -m http.server` from that folder)
+Optional: captioned video player (UI must be running)  
+http://127.0.0.1:8765/demo/watch.html  
+(mp4 also at `content/assets/media/2026-07-31-showcase-crash-demo.mp4` for VLC)
 
 Browser: full screen UI, quit notifications. Repo tab open on README.
 

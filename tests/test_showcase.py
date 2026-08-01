@@ -144,6 +144,26 @@ async def test_meta_exposes_crashable_stages() -> None:
         assert "evaluating" in body["crashable_stages"]
         assert body["default_crash_at"] == "writing"
         assert "completed" not in body["crashable_stages"]
+        assert body.get("demo_video_url") == "/demo/watch.html"
+
+
+@pytest.mark.asyncio
+async def test_demo_video_player_routes() -> None:
+    """Captioned demo is served from the UI app (not file://)."""
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
+        watch = await client.get("/demo/watch.html")
+        assert watch.status_code == 200
+        assert b"Showcase crash demo" in watch.content
+        mp4 = await client.get("/demo/2026-07-31-showcase-crash-demo.mp4")
+        assert mp4.status_code == 200
+        assert len(mp4.content) > 1000
+        vtt = await client.get("/demo/2026-07-31-showcase-crash-demo.vtt")
+        assert vtt.status_code == 200
+        assert b"WEBVTT" in vtt.content
+        redir = await client.get("/video", follow_redirects=False)
+        assert redir.status_code in (307, 302)
+        assert "/demo/watch.html" in redir.headers.get("location", "")
 
 
 @pytest.mark.asyncio

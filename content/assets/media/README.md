@@ -26,10 +26,13 @@ YYYY-MM-DD-short-slug.ext
 | `watch.html` | Local player with captions enabled |
 
 ```bash
-# Captioned playback (from this directory)
-python -m http.server 8766
-# open http://127.0.0.1:8766/watch.html
+# Recommended: serve via experiment UI (correct MIME types + paths)
+python -m ui.app
+# open http://127.0.0.1:8765/demo/watch.html
+# also: /video  or  /demo
 ```
+
+Do **not** open `watch.html` as a `file://` path or via raw.githubusercontent.com — browsers block the video.
 
 Or load the `.vtt` as a subtitle track in VLC / QuickTime / YouTube after upload.
 

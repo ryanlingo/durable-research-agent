@@ -9,7 +9,7 @@
       --ink: #1a1a1a;
       --muted: #555;
       --bg: #fafafa;
-      --line: #ccc;
+      --bad: #1a1a1a;
     }
     * { box-sizing: border-box; }
     body {
@@ -32,9 +32,11 @@
     p { color: var(--muted); margin: 0 0 16px; font-size: 0.95rem; }
     video {
       width: 100%;
+      max-height: 70vh;
       background: #000;
       border: 1px solid var(--ink);
       border-radius: 4px;
+      display: block;
     }
     .meta {
       margin-top: 16px;
@@ -44,16 +46,34 @@
     }
     a { color: var(--ink); }
     ul { padding-left: 1.2rem; color: var(--muted); font-size: 0.9rem; }
+    #status {
+      display: none;
+      margin: 12px 0 16px;
+      padding: 10px 12px;
+      border: 1px dashed var(--ink);
+      background: #fff;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+    #status.visible { display: block; }
+    .nav {
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+    }
   </style>
 </head>
 <body>
   <main>
+    <p class="nav"><a href="/">← Experiment UI</a> · <a href="/demo/watch.html">Demo player</a></p>
     <h1>Showcase crash demo</h1>
     <p>
       Silent automated capture (~24s) with descriptive captions.
-      Open this file via a local server if the browser blocks local media.
+      Served from the experiment app at <code>/demo/watch.html</code>
+      (run <code>python -m ui.app</code>, then open that URL).
     </p>
-    <video controls playsinline preload="metadata"
+    <div id="status" role="status"></div>
+    <video id="player" controls playsinline preload="auto"
+      crossorigin="anonymous"
       poster="2026-07-31-showcase-mid-run.png">
       <source src="2026-07-31-showcase-crash-demo.mp4" type="video/mp4" />
       <source src="2026-07-31-showcase-crash-demo.webm" type="video/webm" />
@@ -62,20 +82,56 @@
         srclang="en"
         label="English (descriptive)"
         default />
-      Captions require a browser that supports WebVTT.
     </video>
     <p class="meta">
       Captions: 2026-07-31-showcase-crash-demo.vtt<br />
-      Narration script (longer re-record):
-      <a href="../loom-crash-demo.md">loom-crash-demo.md</a>
-      ·
-      <a href="2026-07-31-showcase-crash-demo-narration.vtt">narration.vtt</a>
+      Narration shot list (repo): content/assets/loom-crash-demo.md
     </p>
+
     <ul>
-      <li>Repo: <a href="https://github.com/ryanlingo/durable-research-agent">durable-research-agent</a></li>
-      <li>Live UI: <code>python -m ui.app</code> → Showcase</li>
-      <li>Interview script: <code>demos/interview-playbook.md</code></li>
+      <li>If this page is blank or the video never starts, you opened a
+        <code>file://</code> or GitHub URL. Use the local UI server instead.</li>
+      <li>Correct URL:
+        <code>http://127.0.0.1:8765/demo/watch.html</code></li>
+      <li>Live dual crash: <a href="/">Experiment UI</a> → Showcase → Run</li>
     </ul>
   </main>
+  <script>
+    (function () {
+      var status = document.getElementById("status");
+      var video = document.getElementById("player");
+      function show(msg) {
+        status.textContent = msg;
+        status.classList.add("visible");
+      }
+      if (location.protocol === "file:") {
+        show(
+          "Opened as a local file (file://). Browsers often block the video. " +
+          "Run: python -m ui.app  then open  http://127.0.0.1:8765/demo/watch.html"
+        );
+      }
+      video.addEventListener("error", function () {
+        var err = video.error;
+        var code = err ? err.code : "?";
+        show(
+          "Video failed to load (error " + code + "). " +
+          "Confirm you are on http://127.0.0.1:8765/demo/watch.html " +
+          "and content/assets/media/2026-07-31-showcase-crash-demo.mp4 exists."
+        );
+      });
+      // Probe mp4 so we surface 404s quickly
+      fetch("2026-07-31-showcase-crash-demo.mp4", { method: "HEAD" })
+        .then(function (r) {
+          if (!r.ok) {
+            show("Video file missing or not served (HTTP " + r.status + ").");
+          }
+        })
+        .catch(function () {
+          if (location.protocol !== "file:") {
+            show("Could not reach the video URL. Is the server running?");
+          }
+        });
+    })();
+  </script>
 </body>
 </html>

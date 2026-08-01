@@ -6,7 +6,7 @@ help:
 	@echo "  install-dev   Install runtime + dev dependencies"
 	@echo "  ui            Start experiment UI on :8765"
 	@echo "  demo          Alias for ui (Showcase first look)"
-	@echo "  video         Serve captioned demo player on :8766"
+	@echo "  video         Print URL for captioned demo (use with make ui)"
 	@echo "  worker        Start Temporal Worker"
 	@echo "  run-without   Non-Temporal auto-approve run"
 	@echo "  run-with      Temporal auto-approve run (needs server + worker)"
@@ -28,8 +28,14 @@ ui:
 demo: ui
 
 video:
-	@echo "Captioned player: http://127.0.0.1:8766/watch.html"
-	cd content/assets/media && python -m http.server 8766
+	@echo ""
+	@echo "  Captioned demo player (requires the UI server):"
+	@echo "    1. make ui"
+	@echo "    2. open http://127.0.0.1:8765/demo/watch.html"
+	@echo "       (also /video or /demo)"
+	@echo ""
+	@echo "  Do not open watch.html via file:// or raw GitHub — the video will fail."
+	@echo ""
 
 worker:
 	python -m with_temporal.worker
