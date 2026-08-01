@@ -508,9 +508,43 @@ async function postAction(path) {
   }
 }
 
+function applyInterviewPreset() {
+  // Showcase mid-write at talk pace — default interview path (no keys).
+  if ($("mode")) $("mode").value = "showcase";
+  if ($("pace")) $("pace").value = "1";
+  if ($("crashAt")) $("crashAt").value = "writing";
+  if ($("autoApprove")) $("autoApprove").checked = true;
+  setModeHint();
+  $("sessionMeta").textContent =
+    "Interview preset: Showcase · talk pace · crash at writing. Click Run when ready.";
+}
+
+function dismissStartStrip() {
+  const strip = $("startStrip");
+  if (strip) strip.classList.add("hidden");
+  try {
+    localStorage.setItem("dra_start_strip_dismissed", "1");
+  } catch (_) {
+    /* ignore */
+  }
+}
+
+function restoreStartStrip() {
+  const strip = $("startStrip");
+  if (!strip) return;
+  try {
+    if (localStorage.getItem("dra_start_strip_dismissed") === "1") {
+      strip.classList.add("hidden");
+    }
+  } catch (_) {
+    /* ignore */
+  }
+}
+
 function wire() {
   initPipelines();
   setModeHint();
+  restoreStartStrip();
   $("mode").addEventListener("change", setModeHint);
   if ($("crashAt")) {
     $("crashAt").addEventListener("change", setModeHint);
@@ -521,6 +555,15 @@ function wire() {
   $("btnResume").addEventListener("click", () => postAction("/resume/without"));
   $("btnApproveWithout").addEventListener("click", () => postAction("/approve/without"));
   $("btnApproveWith").addEventListener("click", () => postAction("/approve/with"));
+  if ($("btnInterview")) {
+    $("btnInterview").addEventListener("click", () => {
+      applyInterviewPreset();
+      startSession();
+    });
+  }
+  if ($("btnDismissStart")) {
+    $("btnDismissStart").addEventListener("click", dismissStartStrip);
+  }
 }
 
 wire();

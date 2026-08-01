@@ -93,6 +93,70 @@ h1 {
   margin-bottom: 16px;
 }
 
+/* Getting started / interview hub */
+
+.start-strip {
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  border: 1px solid var(--ink);
+}
+
+.start-kicker {
+  margin: 0 0 4px;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.start-lead {
+  margin: 0;
+  font-size: 0.98rem;
+  color: var(--ink);
+  max-width: 40rem;
+}
+
+.start-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+  align-items: center;
+}
+
+a.btn {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.btn.subtle {
+  border-color: var(--line-soft);
+  color: var(--muted);
+}
+
+.start-paths {
+  margin: 14px 0 0;
+  padding-left: 1.15rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+.start-paths li {
+  margin: 4px 0;
+}
+
+.start-paths code {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+.start-strip.hidden {
+  display: none;
+}
+
 .controls-grid {
   display: flex;
   flex-wrap: wrap;

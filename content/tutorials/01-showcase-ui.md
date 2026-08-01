@@ -36,6 +36,10 @@ Open [http://127.0.0.1:8765](http://127.0.0.1:8765).
 
 ## Run the default crash (mid-write)
 
+**Fast path:** click **Interview demo** on the getting-started strip (sets Showcase, talk pace, crash at writing, and starts the run).
+
+Or manually:
+
 1. Leave **Mode** on **Showcase**.  
 2. Leave **Crash at** on **writing** (default).  
 3. Pace: **Fast** if you want a quick pass; **Talk** or **Slow** for a room.  

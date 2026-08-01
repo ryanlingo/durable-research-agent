@@ -18,6 +18,30 @@
       <div class="top-meta" id="sessionMeta">No active session</div>
     </header>
 
+    <section class="start-strip card" id="startStrip" aria-label="Getting started">
+      <div class="start-strip-main">
+        <p class="start-kicker">Getting started</p>
+        <p class="start-lead">
+          Same research agent twice. Crash mid-write. Compare tokens.
+          Showcase needs no API keys.
+        </p>
+      </div>
+      <div class="start-actions">
+        <button type="button" id="btnInterview" class="btn primary">
+          Interview demo
+        </button>
+        <a class="btn ghost" href="/demo/watch.html">Watch captioned video</a>
+        <button type="button" id="btnDismissStart" class="btn ghost subtle">
+          Dismiss
+        </button>
+      </div>
+      <ul class="start-paths">
+        <li><strong>Interview demo</strong> — Showcase, talk pace, crash at writing, then Run</li>
+        <li><strong>Watch video</strong> — ~24s silent capture with captions (same server)</li>
+        <li><strong>Live</strong> — needs OpenAI key, <code>temporal server start-dev</code>, and a Worker</li>
+      </ul>
+    </section>
+
     <section class="controls card">
       <div class="controls-grid">
         <label class="field grow">

@@ -21,6 +21,9 @@ pip install -r requirements.txt
 python -m ui.app          # http://127.0.0.1:8765
 ```
 
+On the UI, click **Interview demo** (Showcase · talk pace · crash at writing · Run),
+or set those controls manually. Captioned fallback video: `/demo/watch.html`.
+
 Optional: open the deck  
 `content/decks/2026-07-31-durable-agents-crash-lab.pptx`
 
