@@ -87,7 +87,7 @@ In the scripted Showcase demo (no API keys, forced mid-write crash), non-Tempora
 1. **Showcase UI** (fastest): run the dual crash animation, read the savings panel. No keys.  
 2. **Live crash** (real money/tokens): run both agents, kill and resume the non-Temporal path, restart the Temporal worker.  
 3. **Write-ups** in [`content/drafts/`](content/drafts/) (crash, HITL, evaluation, lab design, parallel tools).  
-4. **Demo video**: [`content/assets/media/2026-07-31-showcase-crash-demo.mp4`](content/assets/media/2026-07-31-showcase-crash-demo.mp4).  
+4. **Demo video**: [`content/assets/media/2026-07-31-showcase-crash-demo.mp4`](content/assets/media/2026-07-31-showcase-crash-demo.mp4) ([captions](content/assets/media/2026-07-31-showcase-crash-demo.vtt), [player](content/assets/media/watch.html)).  
 5. **30-min interview playbook**: [`demos/interview-playbook.md`](demos/interview-playbook.md).  
 6. **Content map**: [`content/START-HERE.md`](content/START-HERE.md).
 

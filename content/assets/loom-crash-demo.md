@@ -9,7 +9,7 @@ video: content/assets/media/2026-07-31-showcase-crash-demo.mp4
 
 # P3.2: crash demo recording
 
-Automated capture is at `content/assets/media/2026-07-31-showcase-crash-demo.mp4` (no voiceover). Use this script if you re-record with narration in Loom.
+Automated capture is at `content/assets/media/2026-07-31-showcase-crash-demo.mp4` (no voiceover). Descriptive captions: `2026-07-31-showcase-crash-demo.vtt`. Local player: `content/assets/media/watch.html`. Use this script if you re-record with narration in Loom (pair with `2026-07-31-showcase-crash-demo-narration.vtt`).
 
 **Feature:** Showcase UI runs both stacks through a mid-write crash.  
 **Benefit:** Viewer sees lost work, re-paid tokens, and resume without reading code.  

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Showcase crash demo</title>
+  <style>
+    :root {
+      --ink: #1a1a1a;
+      --muted: #555;
+      --bg: #fafafa;
+      --line: #ccc;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.45;
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 24px 16px 48px;
+    }
+    h1 {
+      font-size: 1.35rem;
+      font-weight: 650;
+      margin: 0 0 8px;
+    }
+    p { color: var(--muted); margin: 0 0 16px; font-size: 0.95rem; }
+    video {
+      width: 100%;
+      background: #000;
+      border: 1px solid var(--ink);
+      border-radius: 4px;
+    }
+    .meta {
+      margin-top: 16px;
+      font-family: ui-monospace, Menlo, monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+    a { color: var(--ink); }
+    ul { padding-left: 1.2rem; color: var(--muted); font-size: 0.9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Showcase crash demo</h1>
+    <p>
+      Silent automated capture (~24s) with descriptive captions.
+      Open this file via a local server if the browser blocks local media.
+    </p>
+    <video controls playsinline preload="metadata"
+      poster="2026-07-31-showcase-mid-run.png">
+      <source src="2026-07-31-showcase-crash-demo.mp4" type="video/mp4" />
+      <source src="2026-07-31-showcase-crash-demo.webm" type="video/webm" />
+      <track kind="captions"
+        src="2026-07-31-showcase-crash-demo.vtt"
+        srclang="en"
+        label="English (descriptive)"
+        default />
+      Captions require a browser that supports WebVTT.
+    </video>
+    <p class="meta">
+      Captions: 2026-07-31-showcase-crash-demo.vtt<br />
+      Narration script (longer re-record):
+      <a href="../loom-crash-demo.md">loom-crash-demo.md</a>
+      ·
+      <a href="2026-07-31-showcase-crash-demo-narration.vtt">narration.vtt</a>
+    </p>
+    <ul>
+      <li>Repo: <a href="https://github.com/ryanlingo/durable-research-agent">durable-research-agent</a></li>
+      <li>Live UI: <code>python -m ui.app</code> → Showcase</li>
+      <li>Interview script: <code>demos/interview-playbook.md</code></li>
+    </ul>
+  </main>
+</body>
+</html>

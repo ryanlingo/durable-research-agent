@@ -24,8 +24,9 @@ python -m ui.app          # http://127.0.0.1:8765
 Optional: open the deck  
 `content/decks/2026-07-31-durable-agents-crash-lab.pptx`
 
-Optional: queue the silent video  
-`content/assets/media/2026-07-31-showcase-crash-demo.mp4`
+Optional: queue the silent video (captions available)  
+`content/assets/media/2026-07-31-showcase-crash-demo.mp4`  
+Captioned player: `content/assets/media/watch.html` (serve with `python -m http.server` from that folder)
 
 Browser: full screen UI, quit notifications. Repo tab open on README.
 
@@ -123,7 +124,7 @@ Walk slides 1–7 and 12 from `content/decks/2026-07-31-durable-agents-crash-lab
 
 | Problem | Fallback |
 |---------|----------|
-| UI will not start | Play `2026-07-31-showcase-crash-demo.mp4` + deck |
+| UI will not start | Play `2026-07-31-showcase-crash-demo.mp4` (+ `.vtt` captions) or `watch.html` + deck |
 | Showcase hangs | Stop, restart UI, Pace **Fast** |
 | No network for clone story | Local repo already open; screenshots in `content/assets/media/` |
 | They only care about HITL | Jump to diagram `05-hitl-polling-vs-signal.svg` + post 02 |

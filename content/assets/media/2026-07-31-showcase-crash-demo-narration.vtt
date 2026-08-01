@@ -1,0 +1,29 @@
+WEBVTT
+Kind: captions
+Language: en
+
+NOTE
+Optional voiceover track for a 90-120s narrated re-record
+(see content/assets/loom-crash-demo.md). Not synced to the silent 24s mp4.
+Use when you record a longer take with mic.
+
+00:00.000 --> 00:10.000
+Same research agent, two stacks. Both get crashed mid-write.
+
+00:10.000 --> 00:25.000
+Clarify, plan, retrieve, search. Both healthy.
+
+00:25.000 --> 00:40.000
+Process dies while writing the report.
+
+00:40.000 --> 00:55.000
+Partial checkpoint recovery. In-flight work gone. Paid work runs again.
+
+00:55.000 --> 01:10.000
+Worker can die; Event History remains. Resume the unfinished Activity.
+
+01:10.000 --> 01:25.000
+The reliability bug shows up as money.
+
+01:25.000 --> 01:40.000
+Retries and SQLite help. They are not Durable Execution.

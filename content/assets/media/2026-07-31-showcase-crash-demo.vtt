@@ -1,0 +1,26 @@
+WEBVTT
+Kind: captions
+Language: en
+
+NOTE
+Descriptive captions for the automated ~24s Showcase capture
+(content/assets/media/2026-07-31-showcase-crash-demo.mp4).
+No voiceover on this file; text describes on-screen action.
+
+00:00.000 --> 00:03.000
+Experiment UI idle. Two columns: Without Temporal and With Temporal.
+
+00:03.000 --> 00:07.000
+Showcase mode starts. Both pipelines advance: clarify, plan, retrieve, search.
+
+00:07.000 --> 00:12.000
+Both sides reach writing. LLM work is in flight.
+
+00:12.000 --> 00:16.000
+Crash mid-write. Left: process killed. Right: Worker killed; history retained.
+
+00:16.000 --> 00:20.000
+Recovery. Left: partial checkpoint; re-paid work. Right: resume unfinished Activity.
+
+00:20.000 --> 00:23.800
+After the crash: Temporal savings panel. Non-Temporal tokens higher; what re-ran listed.

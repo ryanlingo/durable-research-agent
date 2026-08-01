@@ -4,6 +4,9 @@
 |------|------|---------|-------------|
 | 2026-07-31 | Showcase crash demo (video, ~24s) | P3.2 | `content/assets/media/2026-07-31-showcase-crash-demo.mp4` |
 | 2026-07-31 | Showcase crash demo (webm source) | P3.2 | `content/assets/media/2026-07-31-showcase-crash-demo.webm` |
+| 2026-07-31 | Showcase demo captions (WebVTT) | P3.2 | `content/assets/media/2026-07-31-showcase-crash-demo.vtt` |
+| 2026-07-31 | Narration VTT (90–120s re-record) | P3.2 | `content/assets/media/2026-07-31-showcase-crash-demo-narration.vtt` |
+| 2026-07-31 | Captioned local player | P3.2 | `content/assets/media/watch.html` |
 | 2026-07-31 | Showcase dual pipelines idle | P3.3 | `content/assets/media/2026-07-31-showcase-idle.png` |
 | 2026-07-31 | Showcase mid-run | P3.3 | `content/assets/media/2026-07-31-showcase-mid-run.png` |
 | 2026-07-31 | Post-crash full page (savings) | P3.3 | `content/assets/media/2026-07-31-showcase-comparison.png` |
