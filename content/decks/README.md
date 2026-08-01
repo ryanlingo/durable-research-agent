@@ -1,6 +1,6 @@
 # Decks
 
-Slide decks for talks, internal reviews, and interview walkthroughs.
+Slide decks for talks, internal reviews, and live walkthroughs.
 
 ## Ready decks
 

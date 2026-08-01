@@ -508,15 +508,15 @@ async function postAction(path) {
   }
 }
 
-function applyInterviewPreset() {
-  // Showcase mid-write at talk pace — default interview path (no keys).
+function applyShowcasePreset() {
+  // Showcase mid-write at talk pace (no API keys).
   if ($("mode")) $("mode").value = "showcase";
   if ($("pace")) $("pace").value = "1";
   if ($("crashAt")) $("crashAt").value = "writing";
   if ($("autoApprove")) $("autoApprove").checked = true;
   setModeHint();
   $("sessionMeta").textContent =
-    "Interview preset: Showcase · talk pace · crash at writing. Click Run when ready.";
+    "Showcase · talk pace · crash at writing";
 }
 
 function dismissStartStrip() {
@@ -555,9 +555,9 @@ function wire() {
   $("btnResume").addEventListener("click", () => postAction("/resume/without"));
   $("btnApproveWithout").addEventListener("click", () => postAction("/approve/without"));
   $("btnApproveWith").addEventListener("click", () => postAction("/approve/with"));
-  if ($("btnInterview")) {
-    $("btnInterview").addEventListener("click", () => {
-      applyInterviewPreset();
+  if ($("btnShowcasePreset")) {
+    $("btnShowcasePreset").addEventListener("click", () => {
+      applyShowcasePreset();
       startSession();
     });
   }

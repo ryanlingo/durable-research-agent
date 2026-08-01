@@ -1,6 +1,6 @@
-# 30-minute interview / demo playbook
+# 30-minute demo playbook
 
-Run-of-show for a hiring manager, staff engineer, or Temporal-adjacent interview. Goal: they leave with **evidence** (tokens, re-ran work, Worker vs Execution), not a slogan about reliability.
+Run-of-show for a talk, walkthrough, or live explanation of the lab. Goal: the audience leaves with **evidence** (tokens, re-ran work, Worker vs Execution), not a slogan about reliability.
 
 | Layer | |
 |-------|--|
@@ -12,7 +12,7 @@ Run-of-show for a hiring manager, staff engineer, or Temporal-adjacent interview
 
 ---
 
-## Before the call (5 min, once)
+## Before the session (5 min, once)
 
 ```bash
 cd durable-research-agent
@@ -21,7 +21,7 @@ pip install -r requirements.txt
 python -m ui.app          # http://127.0.0.1:8765
 ```
 
-On the UI, click **Interview demo** (Showcase · talk pace · crash at writing · Run),
+On the UI, click **Run Showcase** (Showcase · talk pace · crash at writing · starts the run),
 or set those controls manually. Captioned fallback video: `/demo/watch.html`.
 
 Optional: open the deck  
@@ -65,7 +65,7 @@ If the room is 15 minutes: do **0–16 only** (claim → Showcase → savings), 
 **During Showcase (4–12)**
 
 1. Mode **Showcase**, Crash at **writing**, Pace **Talk** (or **Fast** if short on time).  
-2. Click **Run**. Stay quiet while pipelines move.  
+2. Click **Run** (or **Run Showcase** on the getting-started strip). Stay quiet while pipelines move.  
 3. On crash:  
    - Left: process killed; partial recovery; re-paid work.  
    - Right: Worker can die; history retained; completed Activities not re-run.  

@@ -2,7 +2,7 @@
 
 Writing and teaching assets derived from this repo.
 
-**Start:** [`START-HERE.md`](START-HERE.md) · **Interview demo:** [`../demos/interview-playbook.md`](../demos/interview-playbook.md)
+**Start:** [`START-HERE.md`](START-HERE.md) · **Demo playbook:** [`../demos/demo-playbook.md`](../demos/demo-playbook.md)
 
 - Voice: local `context/STYLE.md`
 - Temporal terms: [`concepts/temporal-concepts.md`](concepts/temporal-concepts.md)

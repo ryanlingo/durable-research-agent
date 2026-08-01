@@ -6,7 +6,7 @@ pptx: content/decks/2026-07-31-durable-agents-crash-lab.pptx
 audience: AI engineers, hiring managers, internal Temporal / platform talks
 duration:
   short: 10-12 min
-  interview: 20-25 min with live Showcase
+  extended: 20-25 min with live Showcase
 repo: https://github.com/ryanlingo/durable-research-agent
 style: context/STYLE.md
 terms: content/concepts/temporal-concepts.md
@@ -42,7 +42,7 @@ Build the deck in your tool of choice. One idea per slide. Prefer diagrams and U
 | 11 | Fairness + intentional gaps | 1:00 |
 | 12 | How to try it / close | 0:45 |
 
-Interview version: insert live CLI or Live UI after slide 6; expand Q&A after 12.
+Extended talk: insert live CLI or Live UI after slide 6; expand Q&A after 12.
 
 ---
 
@@ -278,7 +278,7 @@ Start with Showcase. If the token gap is obvious without a lecture, the control 
 
 ---
 
-## Backup slides (interview / Q&A)
+## Backup slides (Q&A / deep dive)
 
 | B1 | Parallel tools: gather vs concurrent Activities (post 05) |
 | B2 | Evaluation in the loop (faithfulness / relevance / 0.7 gate) |

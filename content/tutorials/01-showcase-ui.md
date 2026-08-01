@@ -36,7 +36,7 @@ Open [http://127.0.0.1:8765](http://127.0.0.1:8765).
 
 ## Run the default crash (mid-write)
 
-**Fast path:** click **Interview demo** on the getting-started strip (sets Showcase, talk pace, crash at writing, and starts the run).
+**Fast path:** click **Run Showcase** on the getting-started strip (sets talk pace, crash at writing, and starts the run).
 
 Or manually:
 
@@ -73,7 +73,7 @@ Mid-search highlights the gather-vs-concurrent-Activities story (post 05). Mid-e
 
 ## Next
 
-- 30-min interview playbook: [`../../demos/interview-playbook.md`](../../demos/interview-playbook.md)  
+- 30-min demo playbook: [`../../demos/demo-playbook.md`](../../demos/demo-playbook.md)  
 - Live mode (real keys + Crash/Resume): [`04-live-mode.md`](04-live-mode.md)  
 - CLI crash without Temporal: [`02-crash-without-temporal.md`](02-crash-without-temporal.md)  
 - Worker kill with Temporal: [`03-crash-with-temporal.md`](03-crash-with-temporal.md)  

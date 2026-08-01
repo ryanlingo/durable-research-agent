@@ -7,7 +7,7 @@ Teaching assets for the durable research lab. Code and UI live at the repo root;
 | You have… | Start with |
 |-----------|------------|
 | 5 minutes, no keys | [Tutorial 01: Showcase UI](tutorials/01-showcase-ui.md) |
-| 30 minutes, interview or talk | [Interview playbook](../demos/interview-playbook.md) |
+| 30 minutes, talk or live walkthrough | [Demo playbook](../demos/demo-playbook.md) |
 | 10–12 min slides | [Crash-lab deck](decks/2026-07-31-durable-agents-crash-lab.pptx) |
 | Want to post online | [Social index](social/README.md) |
 | Want the long argument | [Series](series/durable-agents.md) → drafts 01–05 |
@@ -22,7 +22,7 @@ Teaching assets for the durable research lab. Code and UI live at the repo root;
 | `decks/` | Outline + `.pptx` |
 | `concepts/` | Temporal glossary notes, FBO, recovery-gap catalog |
 | `assets/` | Diagrams, screenshots, demo mp4 |
-| `../demos/` | Crash script + interview playbook |
+| `../demos/` | Crash script + demo playbook |
 
 ## Rules of the lab
 
