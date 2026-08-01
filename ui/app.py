@@ -68,13 +68,38 @@ async def index() -> FileResponse:
     return FileResponse(index_path)
 
 
+def _media_file(name: str) -> Path:
+    """Resolve a file under content/assets/media (no path escape)."""
+    if not MEDIA_DIR.is_dir():
+        raise HTTPException(404, f"Media directory missing: {MEDIA_DIR}")
+    # Disallow nested escapes; only basename-style relative names we ship.
+    candidate = (MEDIA_DIR / name).resolve()
+    try:
+        candidate.relative_to(MEDIA_DIR.resolve())
+    except ValueError as exc:
+        raise HTTPException(404, "Not found") from exc
+    if not candidate.is_file():
+        raise HTTPException(404, f"Media file not found: {name}")
+    return candidate
+
+
 @app.get("/video")
 @app.get("/demo")
+@app.get("/demo/")
 async def demo_video_redirect() -> RedirectResponse:
-    """Captioned Showcase crash demo (watch.html + mp4 + vtt under /demo/)."""
-    if not (MEDIA_DIR / "watch.html").exists():
-        raise HTTPException(404, "Demo player not found under content/assets/media/")
+    """Captioned Showcase crash demo player."""
     return RedirectResponse(url="/demo/watch.html", status_code=307)
+
+
+@app.get("/demo/watch.html")
+async def demo_watch_page() -> FileResponse:
+    return FileResponse(_media_file("watch.html"), media_type="text/html; charset=utf-8")
+
+
+@app.get("/demo/{asset_path:path}")
+async def demo_media_asset(asset_path: str) -> FileResponse:
+    """Serve mp4 / vtt / png used by the captioned player (relative URLs in watch.html)."""
+    return FileResponse(_media_file(asset_path))
 
 
 @app.get("/api/meta")
@@ -213,16 +238,6 @@ async def api_stop(session_id: str) -> dict[str, Any]:
 
 def _sse(data: dict[str, Any]) -> str:
     return f"data: {json.dumps(data, default=str)}\n\n"
-
-
-# Captioned demo assets: /demo/watch.html, /demo/*.mp4, /demo/*.vtt
-# Registered after /demo redirect so exact /demo still redirects to watch.html.
-if MEDIA_DIR.is_dir():
-    app.mount(
-        "/demo",
-        StaticFiles(directory=str(MEDIA_DIR), html=True),
-        name="demo",
-    )
 
 
 def main() -> None:
