@@ -69,6 +69,7 @@ Mid-search highlights the gather-vs-concurrent-Activities story (post 05). Mid-e
 
 ## Next
 
+- 30-min interview playbook: [`../../demos/interview-playbook.md`](../../demos/interview-playbook.md)  
 - Live mode (real keys + Crash/Resume): [`04-live-mode.md`](04-live-mode.md)  
 - CLI crash without Temporal: [`02-crash-without-temporal.md`](02-crash-without-temporal.md)  
 - Worker kill with Temporal: [`03-crash-with-temporal.md`](03-crash-with-temporal.md)  

@@ -87,7 +87,9 @@ In the scripted Showcase demo (no API keys, forced mid-write crash), non-Tempora
 1. **Showcase UI** (fastest): run the dual crash animation, read the savings panel. No keys.  
 2. **Live crash** (real money/tokens): run both agents, kill and resume the non-Temporal path, restart the Temporal worker.  
 3. **Write-ups** in [`content/drafts/`](content/drafts/) (crash, HITL, evaluation, lab design, parallel tools).  
-4. **Demo video**: [`content/assets/media/2026-07-31-showcase-crash-demo.mp4`](content/assets/media/2026-07-31-showcase-crash-demo.mp4).
+4. **Demo video**: [`content/assets/media/2026-07-31-showcase-crash-demo.mp4`](content/assets/media/2026-07-31-showcase-crash-demo.mp4).  
+5. **30-min interview playbook**: [`demos/interview-playbook.md`](demos/interview-playbook.md).  
+6. **Content map**: [`content/START-HERE.md`](content/START-HERE.md).
 
 ```
         ┌──────────────────────────────┐
@@ -189,7 +191,7 @@ Copy [`.env.example`](.env.example) to `.env` (gitignored):
 
 ## Crash recovery
 
-Use the same query; kill both systems at the same point. Walkthrough: [`demos/crash_demo.md`](demos/crash_demo.md).
+Use the same query; kill both systems at the same point. Walkthrough: [`demos/crash_demo.md`](demos/crash_demo.md). Interview run-of-show: [`demos/interview-playbook.md`](demos/interview-playbook.md).
 
 - **Without Temporal:** resume with `--run-id`. Expect partial recovery and re-paid work. Tutorial: [`content/tutorials/02-crash-without-temporal.md`](content/tutorials/02-crash-without-temporal.md).
 - **With Temporal:** restart the Worker. The Workflow Execution continues; completed Activities are not re-run when history is replayed. Tutorial: [`content/tutorials/03-crash-with-temporal.md`](content/tutorials/03-crash-with-temporal.md).
@@ -204,8 +206,8 @@ without_temporal/       # asyncio + tenacity + SQLite + polling approval
 with_temporal/          # Workflow, Activities, Signals, Queries, Worker
 ui/                     # Experiment dashboard (FastAPI + static UI)
 data/docs/              # Fixed markdown corpus for RAG
-demos/                  # Crash recovery procedure
-content/                # Teaching assets (see below)
+demos/                  # Crash procedure + interview playbook
+content/                # Teaching assets (see content/START-HERE.md)
 .env.example            # Configuration template
 pyproject.toml          # Package metadata and dependencies
 requirements.txt        # Pip-friendly install list
@@ -222,6 +224,8 @@ requirements.txt        # Pip-friendly install list
 | `content/assets/diagrams/` | Infographics (SVG + PNG) |
 | `content/assets/media/` | Screenshots and demo video |
 | `content/social/` | Short-form cuts (launch + posts 02–05 + gaps) |
+| `content/START-HERE.md` | Content map |
+| `demos/interview-playbook.md` | 30-min interview / talk run-of-show |
 
 ---
 

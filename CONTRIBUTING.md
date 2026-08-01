@@ -21,6 +21,8 @@ cp .env.example .env
 5. **Secrets** - never commit `.env` or API keys.
 
 ```bash
+make check    # ruff + pytest (same surface as CI)
+# or:
 pytest -q
 ruff check shared without_temporal with_temporal ui tests
 ```

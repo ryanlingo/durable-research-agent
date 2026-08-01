@@ -1,4 +1,4 @@
-.PHONY: help install install-dev ui worker run-without run-with demo-server test lint demo
+.PHONY: help install install-dev ui worker run-without run-with demo-server test lint demo check
 
 help:
 	@echo "Targets:"
@@ -12,6 +12,7 @@ help:
 	@echo "  demo-server   Print Temporal dev server command"
 	@echo "  test          Run pytest"
 	@echo "  lint          Run ruff"
+	@echo "  check         lint + test (CI-local)"
 
 install:
 	pip install -r requirements.txt
@@ -38,7 +39,9 @@ demo-server:
 	@echo "temporal server start-dev"
 
 test:
-	pytest
+	python -m pytest
 
 lint:
-	ruff check .
+	python -m ruff check shared without_temporal with_temporal ui tests
+
+check: lint test
